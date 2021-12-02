@@ -1212,7 +1212,7 @@ h2 {
   float: right;
   background-color: #2f9c67;
   height: 30px;
-  padding: 0; }
+  padding: 2px; }
   .btn-success :hover,
   .btn-success :active,
   .btn-success :focus {
