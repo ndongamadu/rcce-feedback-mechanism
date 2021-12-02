@@ -69,10 +69,10 @@ function getDataTableData(data = filteredCfmData){
                     '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
                     element['Country'], element['Organisation Name'], 
                     element['Perception'] != "" ? element['Perception'] : "-", 
-                    element['Suggestion'] != "" ? element['Suggestion'] : "-", 
-                    element['Rumour tracking'] != "" ? element['Rumour tracking'] : "-", 
+                    element['Suggestions'] != "" ? element['Suggestions'] : "-", 
+                    element['Rumors'] != "" ? element['Rumors'] : "-", 
                     element['Questions'] !="" ? element['Questions'] : "-", 
-                    element['Complaint'] != "" ? element['Complaint'] : "-", 
+                    element['Complaints'] != "" ? element['Complaints'] : "-", 
                     element['Accountability'] != "" ? element['Accountability'] : "-", 
                     //link with icone
                     element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-download fa-sm"></i></a>' : "-"
@@ -245,7 +245,7 @@ function updateViz() {
     $('#datatable').dataTable().fnAddData(dt);
 
     // reset CFM purpose text
-    $('.purpose > h6 > span').text("(Select Country)");
+    $('.purpose > span > label').text("(Select Country)");
 } //updateViz
 let g, mapsvg, projection, width, height, zoom, path;
 let currentZoom = 1;
@@ -360,7 +360,7 @@ function initiateMap() {
       hideMapTooltip(maptip); 
     })
     .on("click", function(d){
-      $('.purpose > h6 > span').text("( " +d.properties.NAME+" )");
+      $('.purpose > span > label').text("( " +d.properties.NAME+" )");
       var data = filteredCfmData.filter(function(p) { return p['ISO3'] == d.properties.ISO_A3 ; });
       var dt = getDataTableData(data);
       $('#datatable').dataTable().fnClearTable();
@@ -495,3 +495,12 @@ $('#regionSelect').on('change', function(e){
     $('#all').prop('checked', true);
 
   });
+
+$('#reset-table').on('click', function(){
+    if(countrySelectedFromMap){
+    var dt = getDataTableData();
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt)
+    }
+    
+});

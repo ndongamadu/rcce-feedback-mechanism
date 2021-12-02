@@ -1186,8 +1186,9 @@ h2 {
   text-transform: uppercase; }
 
 .key-figure .num {
-  font-family: "Gotham-Light", sans-serif;
+  font-family: "Gotham Bold", sans-serif;
   font-size: 40px;
+  font-weight: bold;
   line-height: 40px;
   min-height: 40px;
   color: #204669; }
@@ -1206,6 +1207,17 @@ h2 {
   display: inline; }
   .purpose h6 span {
     font-weight: bold; }
+
+.btn-success {
+  float: right;
+  background-color: #2f9c67;
+  height: 30px;
+  padding: 0; }
+  .btn-success :hover,
+  .btn-success :active,
+  .btn-success :focus {
+    background-color: #2f9c67;
+    box-shadow: #2f9c67; }
 
 #datatable.dataTable td {
   font-size: 13px; }
