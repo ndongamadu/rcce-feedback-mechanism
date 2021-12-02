@@ -53,3 +53,12 @@ $('#regionSelect').on('change', function(e){
     $('#all').prop('checked', true);
 
   });
+
+$('#reset-table').on('click', function(){
+    if(countrySelectedFromMap){
+    var dt = getDataTableData();
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt)
+    }
+    
+});

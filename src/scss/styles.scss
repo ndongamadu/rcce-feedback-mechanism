@@ -180,6 +180,19 @@ h2 {
   }
 }
 
+.btn-success {
+  float: right;
+  background-color: #2f9c67;
+  height: 30px;
+  padding: 0;
+  :hover,
+  :active,
+  :focus {
+    background-color: #2f9c67;
+    box-shadow: #2f9c67;
+  }
+  // border: #ccc;
+}
 // table content font
 #datatable.dataTable td {
   font-size: 13px;
