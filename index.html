@@ -37,7 +37,8 @@
         <h2>Community Feedback Mechanism Tracker</h2>
         <p class="small" id="description">
             The CFM Tracker monitors community feedback mechanisms led by the Collective Service's Partners to support RCCE response on public health emergencies and more specifically on COVID-19. 
-            Last update 30/11/201.<a href="#">
+            Last update 30/11/201.
+            <a href="https://forms.gle/mDbSbaua1yfNkJc19" target="_blank">
                 <i class="far fa-envelope"></i> Submit a community feedback mechanism.
             </a>
         </p>
@@ -84,8 +85,21 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="purpose">
-                    <span>Community Feedback Mechanism Purpose <label>(Select Country)</label></span>
-                    <button type="button" class="btn btn-success" id="reset-table">Reset table</button>
+                    <!-- <span>Community Feedback Mechanism Purpose <label>(Select Country)</label></span> -->
+                    <span class="focusFilter">
+                        <label>Filter by purpose: </label>
+                        <label><button type="button" class="btn btn-secondary filter" id="perception" value="Perception">Perception</button></label>
+                        <label><button type="button" class="btn btn-secondary filter" id="rumors" value="Rumors">Rumors</button></label>
+                        <label><button type="button" class="btn btn-secondary filter" id="questions" value="Questions">Questions</button></label>
+                        <label><button type="button" class="btn btn-secondary filter" id="others" value="otherFocus">Others</button></label>
+                    </span>
+                    <span class="emergencyFilter">
+                        <label>Filter by emergency: </label>
+                        <label><button type="button" class="btn btn-secondary filter" id="covid" value="COVID-19">COVID-19</button></label>
+                        <label><button type="button" class="btn btn-secondary filter" id="ebola" value="Ebola">Ebola</button></label>
+                        <label><button type="button" class="btn btn-secondary filter" id="otherOutbreak" value="otherOutbreak">Other Outbreak</button></label>
+                    </span>
+                    <button type="button" class="btn btn-tertiary" id="reset-table">Reset filters</button>
                 </div>
                 <table id="datatable" class="stripe datatable" style="width:100%">
                     <thead>
@@ -93,12 +107,13 @@
                         <th></th>
                         <th>Country</th>
                         <th>Organization</th>
-                        <th>Perception</th>
-                        <th>Suggestions</th>
+                        <th>Purpose</th>
+                        <th>Focus</th>
+                        <!-- <th>Suggestions</th>
                         <th>Rumors</th>
                         <th>Questions</th>
                         <th>Complaints</th>
-                        <th>Accountability</th>
+                        <th>Accountability</th> -->
                         <th>Link</th>
                     </tr>
                     </thead>
