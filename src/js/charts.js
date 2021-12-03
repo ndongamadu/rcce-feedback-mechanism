@@ -58,6 +58,32 @@ function regionSelectionDropdown(){
     $('#regionSelect').append(options);
 }//regionSelectionDropdown
 
+// returns a formatted array with purposes/emergencies 
+function getFormattedColumn(item, column){
+    var items = [] ;
+    var arr = item.split(",");
+    var trimedArr = arr.map(x => x.trim());
+    for (let index = 0; index < trimedArr.length; index++) { //remove empty elements
+        if (trimedArr[index]) {
+            items.push(trimedArr[index])
+        }
+    }
+    var formatedPurposes = "";
+    items.forEach(d => {
+        var className = d.toLowerCase();
+        var arrPurpose = ['perception', 'rumors', 'questions'];
+        var arrFocus = ['covid-19', 'ebola'];
+        if (column == 'Purpose') {
+            arrPurpose.includes(className) ? '' : className = 'purpose-other';
+        } else{
+            arrFocus.includes(className) ? '' : className = 'emergency-other';
+        }
+        
+        formatedPurposes +='<label class="alert tag-'+className+'">'+d+'</label>';
+    });
+    return formatedPurposes;
+} // getFormattedColumn
+
 function getDataTableData(data = filteredCfmData){
     var dtData = [];
     data.forEach(element => {
@@ -66,13 +92,10 @@ function getDataTableData(data = filteredCfmData){
         element['Status'] == "Pipeline" ? cfmstatusColor =  ifrcGreen_3 : null;
         dtData.push([
                     '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
-                    element['Country'], element['Organisation Name'], 
-                    element['Perception'] != "" ? element['Perception'] : "-", 
-                    element['Suggestions'] != "" ? element['Suggestions'] : "-", 
-                    element['Rumors'] != "" ? element['Rumors'] : "-", 
-                    element['Questions'] !="" ? element['Questions'] : "-", 
-                    element['Complaints'] != "" ? element['Complaints'] : "-", 
-                    element['Accountability'] != "" ? element['Accountability'] : "-", 
+                    element['Country'], 
+                    element['Organisation Name'],  
+                    getFormattedColumn(element['Purpose'], 'Purpose'),
+                    getFormattedColumn(element['Emergency'], 'Emergency'),
                     //link with icone
                     element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-download fa-sm"></i></a>' : "-"
         ]);
@@ -113,55 +136,55 @@ function generateBarChart(){
         arrX.includes(element.key) ? '' : arrX.push(element.key);
         arrY.includes(element.key) ? '' : arrY.push(element.value);
     });
-	var chart = c3.generate({
-		bindto: '#statusChart',
-		size: { height: 100 },
-		// padding: {right: 10, left: 180},
-	    data: {
-	        x: 'x',
-	        columns: [arrX, arrY],
-	        type: 'bar'
-	    },
-	    bar: {
-	    	width: 10
-	    },
-	    color: {
-	    	pattern: [ifrcGreen_2]
-	    },
-	    axis: {
-	        rotated : true,
-	      x: {
-	          type : 'category',
-	          tick: {	          	
+    var chart = c3.generate({
+        bindto: '#statusChart',
+        size: { height: 100 },
+        // padding: {right: 10, left: 180},
+        data: {
+            x: 'x',
+            columns: [arrX, arrY],
+            type: 'bar'
+        },
+        bar: {
+            width: 10
+        },
+        color: {
+            pattern: [ifrcGreen_2]
+        },
+        axis: {
+            rotated : true,
+          x: {
+              type : 'category',
+              tick: {               
                 outer: false,
                 multiline: false,
                 fit: true,}
-	      },
-	      y: {
-	      	tick: {
-	      		outer: false,
-	      		format: d3.format('d'),
-	      		count: 3
-	      	}
-	      } 
-	    },
-	    // grid: {
-	    //   	y: {
-	    //   		show: true
-	    //   	}
-	    // },
-	    legend: {
-	    	show: false
-	    },
-	    tooltip: {
-	    	format: {
-	    		value: function(value){
-	    			return d3.format('d')(value)
-	    		}
-	    	}
-	    }
-	}); 
-	return chart;
+          },
+          y: {
+            tick: {
+                outer: false,
+                format: d3.format('d'),
+                count: 3
+            }
+          } 
+        },
+        // grid: {
+        //      y: {
+        //          show: true
+        //      }
+        // },
+        legend: {
+            show: false
+        },
+        tooltip: {
+            format: {
+                value: function(value){
+                    return d3.format('d')(value)
+                }
+            }
+        }
+    }); 
+    return chart;
 } //generateBarChart 
 
 // return mapActiveColor, mapInactiveColor or mapPipelineColor based on the corresponding status
@@ -244,5 +267,16 @@ function updateViz() {
     $('#datatable').dataTable().fnAddData(dt);
 
     // reset CFM purpose text
-    $('.purpose > span > label').text("(Select Country)");
+    // $('.purpose > span > label').text("(Select Country)");
 } //updateViz
+
+
+function clickButton(){
+    var val = this.value;
+    console.log(val)
+}// clickButton
+
+var buttons = document.getElementsByClassName("filter");
+for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", clickButton);        
+}
