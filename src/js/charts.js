@@ -1,3 +1,7 @@
+let purposeArr = ['Perception', 'Rumors', 'Questions'],
+    purposeOtherArr = ['suggestions', 'Complaints', 'Accountability'],
+    emergencyArr = ['COVID-19', 'Ebola', 'Dengue'],
+    emergencyOtheArr = ['Protection', 'Migrant', 'Refugeees'];
 // colors 
 let ifrcPink_1 = '#D90368', ifrcPink_2 = '#E27093', ifrcPink_3 = '#E996AD', ifrcPink_4 = '#F0BDC9', ifrcPink_5 = '#FAE7EA';
 let ifrcGreen_1 = '#2F9C67', ifrcGreen_2 = '#78B794', ifrcGreen_3 = '#9EC8AE', ifrcGreen_4 = '#C2DACA', ifrcGreen_5 = '#E9F1EA';
@@ -100,6 +104,7 @@ function getDataTableData(data = filteredCfmData){
                     element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-download fa-sm"></i></a>' : "-"
         ]);
     });
+
     return dtData;
 }
 
@@ -108,15 +113,24 @@ function generateDataTable(){
     var dtData = getDataTableData();
     datatable = $('#datatable').DataTable({
         data : dtData,
-        // "columns": [
-        //     {"width": "1%"},
-        //     {"width": "1%"},
-        //     {"width": "1%"},
-        //     {"width": "1%"},
-        //     {"width": "80%"},
-        //     {"width": "1%"},
-        //     {"width": "1%"}
-        // ],
+        "columns": [
+            {"width": "1%"},
+            {"width": "15%"},
+            {"width": "15%"},
+            {"width": "50%"},
+            {"width": "50%"},
+            {"width": "1%"}
+        ],
+        "columnDefs": [
+            {
+                "className": "dt-head-left",
+                "targets": "_all"
+            },
+            {
+                "defaultContent": "-",
+                "targets": "_all"
+            }
+        ],
         "pageLength": 10,
         "bLengthChange": false,
         "pagingType": "simple_numbers",
@@ -270,10 +284,43 @@ function updateViz() {
     // $('.purpose > span > label').text("(Select Country)");
 } //updateViz
 
+//filter 
+function purposeByItem(item, arr) {
+	var included = false;
+	for (var i=0; i<arr.length; i++) {
+	  if (item.includes(arr[i])) {
+	    included = true;
+	    break;
+	  }
+	}
+	return included;
+}
 
 function clickButton(){
     var val = this.value;
-    console.log(val)
+    var colName = (['Perception', 'Rumors', 'Questions', 'purpose-other'].includes(val)) ? 'Purpose' : 
+                (['COVID-19', 'Ebola', 'emergency-other'].includes(val)) ? 'Emergency' : "";
+    var filteredData = filteredCfmData.filter(function(d){
+        if (colName == 'Purpose') {
+            if (val != 'purpose-other') {
+                return d['Purpose'].includes(val);
+            } else {
+                return (d['Purpose'].includes('Suggestions') || d['Purpose'].includes('Complaints') || d['Purpose'].includes('Accountability'));
+            }
+        } else if (colName == 'Emergency') {
+            if (val == 'COVID-19' || val == 'Ebola') {
+                return d['Emergency'].includes(val);
+            } else {
+                // return (d['Emergency'].includes('Migrant') || d['Emergency'].includes('Protection') || d['Emergency'].includes('Refugees'));
+                return d['Emergency'].includes('Dengue');
+            }
+        }
+    });
+
+    // // update datatable
+    var dt = getDataTableData(filteredData);
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt);
 }// clickButton
 
 var buttons = document.getElementsByClassName("filter");
