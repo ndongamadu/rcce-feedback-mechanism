@@ -15,7 +15,8 @@ var mapColorRangeDefault = [ifrcBlue_3, ifrcBlue_2, ifrcBlue_1];
 // let mapInactive = '#a6d8e8';
 
 let numberCountriesCFM = 0;
-let regionsArr = ['All regions'];
+let regionsArr = ['All regions'],
+    organisationsArr = ['All organizations'];
 let countriesISO3Arr = [];
 
 let statusChart ;
@@ -40,7 +41,7 @@ function setCountriesAndOrgCFM(){
     filteredCfmData.forEach(element => {
         arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
         arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
-        regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
+        // regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
         countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
     });
     $('#totalCfms').text(filteredCfmData.length);
@@ -50,16 +51,29 @@ function setCountriesAndOrgCFM(){
 
 // populate regions selections via the data
 function regionSelectionDropdown(){
-    var options = "";
-    filteredCfmData.forEach(element => {
+    var options = "",
+        orgOptions = "";
+    cfmData.forEach(element => {
         regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
+        organisationsArr.includes(element['Organisation Name']) ? '' : organisationsArr.push(element['Organisation Name']);
     });
     for (let index = 0; index < regionsArr.length; index++) {
         const element = regionsArr[index];
-        index == 0 ? options += '<option value="' + element + '" selected>' + element + '</option>'  : 
+        index == 0 ? options += '<option value="all" selected>' + element + '</option>'  : 
             options += '<option value="' + element + '">' + element + '</option>';
     }
+    for (let index = 0; index < organisationsArr.length; index++) {
+        const element = organisationsArr[index];
+        index == 0 ? orgOptions += '<option value="all" selected>' + element + '</option>'  : 
+        orgOptions += '<option value="' + element + '">' + element + '</option>';
+    }
     $('#regionSelect').append(options);
+    $('#regionSelect').multipleSelect();
+
+    $('#orgSelect').append(orgOptions);
+    $('#orgSelect').multipleSelect({
+        filter: true
+    });
 }//regionSelectionDropdown
 
 // returns a formatted array with purposes/emergencies 
@@ -116,8 +130,8 @@ function generateDataTable(){
         "columns": [
             {"width": "1%"},
             {"width": "15%"},
-            {"width": "15%"},
-            {"width": "50%"},
+            {"width": "20%"},
+            {"width": "45%"},
             {"width": "50%"},
             {"width": "1%"}
         ],
@@ -327,3 +341,32 @@ var buttons = document.getElementsByClassName("filter");
 for (var i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener("click", clickButton);        
 }
+
+function getFilteredDataFromSelection(){
+    var regionSelected = $('#regionSelect').val();
+    var orgSelected = $('#orgSelect').val();
+    if ((regionSelected == "all") && (orgSelected == "all")) {        
+        // reset map zoom to global
+        mapsvg.transition()
+        .duration(750)
+        .call(zoom.transform, d3.zoomIdentity);
+        return cfmData;
+    } else if((regionSelected != "all") && (orgSelected != "all")){
+        return cfmData.filter(function(d){
+            return ((d['Region'] == regionSelected) && (d['Organisation Name'] == orgSelected));
+        }) 
+    } else {
+        var columnOfInterest = "",
+            valueOfInterest = "";
+        if (regionSelected != 'all') {
+            columnOfInterest = 'Region';
+            valueOfInterest = regionSelected;
+        } else {
+            columnOfInterest = 'Organisation Name';
+            valueOfInterest = orgSelected;
+        }
+        return cfmData.filter(function(d){
+            return d[columnOfInterest] == valueOfInterest;
+        })
+    }
+} //getFilteredDataFromSelection

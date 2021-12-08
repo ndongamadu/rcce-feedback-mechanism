@@ -34,23 +34,32 @@ $( document ).ready(function(){
     getData();
 });
 
+$('#orgSelect').on('change', function(d){
+    filteredCfmData = getFilteredDataFromSelection();
+    filteredCfmData.forEach(element => {
+        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
+    });
+    updateViz();
+});
+
 $('#regionSelect').on('change', function(e){
-    var select = $('#regionSelect').val();
-    select != "All regions" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
-    filteredCfmData = cfmData;
+    // var select = $('#regionSelect').val();
+    // select != "all" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
+    filteredCfmData = getFilteredDataFromSelection();
+
     filteredCfmData.forEach(element => {
         countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
     });
     updateViz();
     // zoom to region 
-    if (select == 'All regions') {
-        mapsvg.transition()
-        .duration(750)
-        .call(zoom.transform, d3.zoomIdentity);
-    }
+    // if (select == 'all') {
+    //     mapsvg.transition()
+    //     .duration(750)
+    //     .call(zoom.transform, d3.zoomIdentity);
+    // }
     // zoomToRegion(select);
     // reset layers selection to all
-    $('#all').prop('checked', true);
+    // $('#all').prop('checked', true);
 
   });
 
@@ -60,5 +69,4 @@ $('#reset-table').on('click', function(){
     $('#datatable').dataTable().fnClearTable();
     $('#datatable').dataTable().fnAddData(dt)
     // }
-    
 });
