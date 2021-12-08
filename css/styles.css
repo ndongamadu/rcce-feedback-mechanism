@@ -1211,8 +1211,8 @@ h2 {
 .btn-tertiary {
   float: right;
   padding: 0 5px 0 5px;
-  color: #d1021a; }
-
+  color: #d1021a; 
+}
 #datatable.dataTable td {
   font-size: 13px; }
   #datatable.dataTable td .Active {
