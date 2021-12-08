@@ -248,6 +248,7 @@ a {
 // }
 
 .emergencyFilter {
+  padding: 0 10px 0 10px;
   #covid {
     background-color: #d90368;
     border-color: #d90368;
@@ -266,8 +267,8 @@ a {
 }
 .focusFilter {
   #perception {
-    background-color: #204669;
-    border-color: #204669;
+    background-color: #2f9c67;
+    border-color: #2f9c67;
   }
   #rumors {
     background-color: #546b89;
@@ -287,12 +288,9 @@ a {
 }
 
 .alert {
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 0 5px 0 5px;
   color: #fff;
-  margin-right: 8px;
+  margin-right: 5px;
 }
 
 // focus
@@ -305,12 +303,8 @@ a {
 .tag-emergency-other {
   background-color: #9d9fa2;
 }
-// .tag-perception {
-//   background-color: #204669;
-// }
-// functions
 .tag-perception {
-  background-color: #204669;
+  background-color: #2f9c67;
 }
 .tag-rumors {
   background-color: #546b89;

@@ -1236,24 +1236,23 @@ table.dataTable thead td {
 a {
   color: #204669; }
 
-.emergencyFilter #covid {
-  background-color: #d90368;
-  border-color: #d90368; }
-
-.emergencyFilter #ebola {
-  background-color: #e27093;
-  border-color: #e27093; }
-
-.emergencyFilter #ohterOutbreak {
-  background-color: #e996ad;
-  border-color: #e996ad; }
-
-.emergencyFilter .btn {
-  padding: 0 5px 0 5px; }
+.emergencyFilter {
+  padding: 0 10px 0 10px; }
+  .emergencyFilter #covid {
+    background-color: #d90368;
+    border-color: #d90368; }
+  .emergencyFilter #ebola {
+    background-color: #e27093;
+    border-color: #e27093; }
+  .emergencyFilter #ohterOutbreak {
+    background-color: #e996ad;
+    border-color: #e996ad; }
+  .emergencyFilter .btn {
+    padding: 0 5px 0 5px; }
 
 .focusFilter #perception {
-  background-color: #204669;
-  border-color: #204669; }
+  background-color: #2f9c67;
+  border-color: #2f9c67; }
 
 .focusFilter #rumors {
   background-color: #546b89;
@@ -1271,12 +1270,9 @@ a {
   padding: 0 5px 0 5px; }
 
 .alert {
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 0 5px 0 5px;
   color: #fff;
-  margin-right: 8px; }
+  margin-right: 5px; }
 
 .tag-covid-19 {
   background-color: #d90368; }
@@ -1288,7 +1284,7 @@ a {
   background-color: #9d9fa2; }
 
 .tag-perception {
-  background-color: #204669; }
+  background-color: #2f9c67; }
 
 .tag-rumors {
   background-color: #546b89; }

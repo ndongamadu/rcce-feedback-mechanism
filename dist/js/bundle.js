@@ -313,7 +313,7 @@ function clickButton(){
                 return d['Emergency'].includes(val);
             } else {
                 // return (d['Emergency'].includes('Migrant') || d['Emergency'].includes('Protection') || d['Emergency'].includes('Refugees'));
-                return d['Emergency'].includes('Dengue');
+                return (d['Emergency'].includes(['Migrant']) || d['Emergency'].includes(['Refugees']) || d['Emergency'].includes(['Volcano']) || d['Emergency'].includes(['Dengue']) || d['Emergency'].includes(['Protection']) || d['Emergency'].includes(['Youth']));
             }
         }
     });
