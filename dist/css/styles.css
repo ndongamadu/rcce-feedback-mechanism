@@ -1070,7 +1070,9 @@
     transform: rotate(359deg); } }
 
 body {
-  font-family: "Source Sans Pro", sans-serif; }
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.7; }
 
 #main {
   opacity: 0;
@@ -1162,7 +1164,6 @@ h2 {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   border: 0px;
   border-radius: 3px;
-  font-size: 14px;
   color: #000;
   transition: 0.3s opacity ease;
   z-index: 100;
@@ -1180,16 +1181,16 @@ h2 {
 
 .key-figure h5 {
   font-family: "Source Sans Pro", sans-serif;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.85rem;
+  line-height: 1.7;
   color: #000000;
   text-transform: uppercase; }
 
 .key-figure .num {
   font-family: "Gotham Bold", sans-serif;
   font-size: 40px;
-  font-weight: bold;
   line-height: 40px;
+  font-weight: bold;
   min-height: 40px;
   color: #204669; }
 
@@ -1198,23 +1199,31 @@ h2 {
   border-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-  font: 700 16px "Source Sans Pro", sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.7;
   height: 30px;
   margin: 20px 0;
   width: 100%; }
 
 .purpose {
-  display: inline; }
+  display: inline;
+  padding-top: 10px; }
   .purpose h6 span {
     font-weight: bold; }
 
 .btn-tertiary {
   float: right;
   padding: 0 5px 0 5px;
-  color: #d1021a; }
+  color: #d1021a;
+  text-transform: uppercase;
+  border: 0;
+  font-size: 0.85rem;
+  line-height: 1.5; }
 
 #datatable.dataTable td {
-  font-size: 13px; }
+  font-size: 0.85rem;
+  line-height: 1.5; }
   #datatable.dataTable td .Active {
     color: "#2F9C67"; }
   #datatable.dataTable td .Inactive {
@@ -1225,13 +1234,14 @@ h2 {
 table.dataTable thead th,
 table.dataTable thead td {
   font-family: "Gotham-Bold", sans-serif;
-  font-size: 13px;
-  line-height: 13px; }
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border-bottom: 1px solid #111; }
 
 .fa-download {
   color: #000;
-  font-size: 16px;
-  /* padding-left: 35px; */ }
+  font-size: 16px; }
 
 a {
   color: #204669; }
@@ -1248,7 +1258,11 @@ a {
     background-color: #e996ad;
     border-color: #e996ad; }
   .emergencyFilter .btn {
-    padding: 0 5px 0 5px; }
+    padding: 0 5px 0 5px;
+    text-transform: uppercase;
+    border: 0;
+    font-size: 0.85rem;
+    line-height: 1.5; }
 
 .focusFilter #perception {
   background-color: #2f9c67;
@@ -1267,12 +1281,18 @@ a {
   border-color: #a6b0c3; }
 
 .focusFilter .btn {
-  padding: 0 5px 0 5px; }
+  padding: 0 5px 0 5px;
+  text-transform: uppercase;
+  border: 0;
+  font-size: 0.85rem;
+  line-height: 1.5; }
 
 .alert {
   padding: 0 5px 0 5px;
   color: #fff;
-  margin-right: 5px; }
+  margin-right: 5px;
+  border: 0;
+  border-radius: 0.5rem; }
 
 .tag-covid-19 {
   background-color: #d90368; }

@@ -3,6 +3,8 @@
 
 body {
   font-family: "Source Sans Pro", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.7;
 }
 
 #main {
@@ -35,8 +37,6 @@ h2 {
   position: relative;
   .zoom-controls {
     position: absolute;
-    // right: 45px;
-    // bottom: 45px;
     right: 45px;
     top: 45px;
     display: grid;
@@ -118,7 +118,7 @@ h2 {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   border: 0px;
   border-radius: 3px;
-  font-size: 14px;
+  // font-size: 14px;
   color: #000;
   transition: 0.3s opacity ease;
   z-index: 100;
@@ -140,8 +140,8 @@ h2 {
 .key-figure {
   h5 {
     font-family: "Source Sans Pro", sans-serif;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 0.85rem;
+    line-height: 1.7;
     color: #000000;
     text-transform: uppercase;
     // font-weight: normal;
@@ -149,12 +149,10 @@ h2 {
   .num {
     font-family: "Gotham Bold", sans-serif;
     font-size: 40px;
-    font-weight: bold;
     line-height: 40px;
+    font-weight: bold;
     min-height: 40px;
     color: #204669;
-    // padding: 10px 15px;
-    // text-align: center;
   }
 }
 
@@ -163,16 +161,18 @@ h2 {
   border-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-  font: 700 16px "Source Sans Pro", sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.7;
   height: 30px;
   margin: 20px 0;
-  //   padding: 0 20px;
-  //   white-space: pre-wrap;
+
   width: 100%;
 }
 
 .purpose {
   display: inline;
+  padding-top: 10px;
   h6 {
     span {
       font-weight: bold;
@@ -182,16 +182,17 @@ h2 {
 
 .btn-tertiary {
   float: right;
-  // background-color: #2f9c67;
   padding: 0 5px 0 5px;
   color: #d1021a;
+  text-transform: uppercase;
+  border: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 // table content font
 #datatable.dataTable td {
-  font-size: 13px;
-  // .fa-circle {
-  //   color: red;
-  // }
+  font-size: 0.85rem;
+  line-height: 1.5;
   .Active {
     color: "#2F9C67";
   }
@@ -207,45 +208,20 @@ h2 {
 table.dataTable thead th,
 table.dataTable thead td {
   font-family: "Gotham-Bold", sans-serif;
-  font-size: 13px;
-  line-height: 13px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border-bottom: 1px solid #111;
 }
 
 .fa-download {
   color: #000;
   font-size: 16px;
-  /* padding-left: 35px; */
 }
-
-// #statusLegend {
-//   padding-left: 10px;
-//   #actif {
-//     i {
-//       color: #2f9c67;
-//     }
-//   }
-//   #inactive {
-//     i {
-//       color: #d90368;
-//     }
-//   }
-//   #pipeline {
-//     i {
-//       color: #fccf9e;
-//     }
-//   }
-// }
 
 a {
   color: #204669;
 }
-
-// .footer {
-//   display: inline;
-//   .submit {
-//     float: right;
-//   }
-// }
 
 .emergencyFilter {
   padding: 0 10px 0 10px;
@@ -263,6 +239,10 @@ a {
   }
   .btn {
     padding: 0 5px 0 5px;
+    text-transform: uppercase;
+    border: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
   }
 }
 .focusFilter {
@@ -284,6 +264,10 @@ a {
   }
   .btn {
     padding: 0 5px 0 5px;
+    text-transform: uppercase;
+    border: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
   }
 }
 
@@ -291,6 +275,8 @@ a {
   padding: 0 5px 0 5px;
   color: #fff;
   margin-right: 5px;
+  border: 0;
+  border-radius: 0.5rem;
 }
 
 // focus

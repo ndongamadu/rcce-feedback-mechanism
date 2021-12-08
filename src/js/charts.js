@@ -101,7 +101,7 @@ function getDataTableData(data = filteredCfmData){
                     getFormattedColumn(element['Purpose'], 'Purpose'),
                     getFormattedColumn(element['Emergency'], 'Emergency'),
                     //link with icone
-                    element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-download fa-sm"></i></a>' : "-"
+                    element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>' : "-"
         ]);
     });
 
