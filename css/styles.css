@@ -1194,7 +1194,9 @@ h2 {
   min-height: 40px;
   color: #204669; }
 
-#regionSelect {
+#regionSelect,
+#orgSelect,
+.ms-choice {
   background-color: #fff;
   border-color: #fff;
   border-radius: 8px;
@@ -1203,8 +1205,15 @@ h2 {
   font-size: 0.85rem;
   line-height: 1.7;
   height: 30px;
-  margin: 20px 0;
+  margin: 20px 0 0 0;
   width: 100%; }
+
+.ms-choice span {
+  position: static;
+  font-weight: bold; }
+
+.ms-choice div.icon-caret {
+  margin-top: 10px; }
 
 .purpose {
   display: inline;
@@ -1220,6 +1229,9 @@ h2 {
   border: 0;
   font-size: 0.85rem;
   line-height: 1.5; }
+
+#datatable {
+  padding-top: 10px; }
 
 #datatable.dataTable td {
   font-size: 0.85rem;
