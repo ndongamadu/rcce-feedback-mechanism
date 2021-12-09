@@ -21,8 +21,6 @@ $( document ).ready(function(){
             filteredCfmData = data[2];
             setCountriesAndOrgCFM();
             regionSelectionDropdown();
-            // statusChart = generateBarChart();
-
             initiateMap();
             generateDataTable();
             //remove loader and show vis
@@ -43,7 +41,7 @@ $('#orgSelect').on('change', function(d){
 });
 
 $('#regionSelect').on('change', function(e){
-    // var select = $('#regionSelect').val();
+    var select = $('#regionSelect').val();
     // select != "all" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
     filteredCfmData = getFilteredDataFromSelection();
 
@@ -57,7 +55,7 @@ $('#regionSelect').on('change', function(e){
     //     .duration(750)
     //     .call(zoom.transform, d3.zoomIdentity);
     // }
-    // zoomToRegion(select);
+    zoomToRegion(select);
     // reset layers selection to all
     // $('#all').prop('checked', true);
 
