@@ -16,6 +16,11 @@ $( document ).ready(function(){
             d3.csv(cfmDataUrl)
         ]).then(function(data){
             geomData = topojson.feature(data[0], data[0].objects.geom);
+            var id = 0;
+            data[2].forEach(element => {
+                element['id'] = id + 1;
+                id = id + 1 +Math.floor(Math.random() * 10);
+            });
             cfmData = data[2];
             locations = data[1];
             filteredCfmData = data[2];

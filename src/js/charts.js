@@ -106,16 +106,17 @@ function getDataTableData(data = filteredCfmData){
     var dtData = [];
     data.forEach(element => {
         var cfmstatusColor = ifrcGreen_1;
-        element['Status'] == "Inactive" ? cfmstatusColor =  ifrcGreen_5 : 
-        element['Status'] == "Pipeline" ? cfmstatusColor =  ifrcGreen_3 : null;
+        // element['Status'] == "Inactive" ? cfmstatusColor =  ifrcGreen_5 : 
+        // element['Status'] == "Pipeline" ? cfmstatusColor =  ifrcGreen_3 : null;
         dtData.push([
-                    '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
+                    // '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
+                    '',
                     element['Country'], 
                     element['Organisation Name'],  
                     getFormattedColumn(element['Purpose'], 'Purpose'),
                     getFormattedColumn(element['Emergency'], 'Emergency'),
-                    //link with icone
-                    element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>' : "-"
+                    element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>' : "-",
+                    element['id']
         ]);
     });
 
@@ -128,12 +129,19 @@ function generateDataTable(){
     datatable = $('#datatable').DataTable({
         data : dtData,
         "columns": [
-            {"width": "1%"},
+            {   "width": "1%",  
+                "className": 'details-control', 
+                "orderable": false,
+                "data": null,
+                "defaultContent": '<i class="fa fa-plus-circle"></i>',  
+            },
+            // {"width": "1%","orderable": false},
             {"width": "15%"},
-            {"width": "20%"},
-            {"width": "45%"},
-            {"width": "50%"},
-            {"width": "1%"}
+            {"width": "20%", "orderable": false},
+            {"width": "45%", "orderable": false},
+            {"width": "50%", "orderable": false},
+            {"width": "1%", "orderable": false}
+            // {"width": "1%", "orderable": false}
         ],
         "columnDefs": [
             {
@@ -143,15 +151,54 @@ function generateDataTable(){
             {
                 "defaultContent": "-",
                 "targets": "_all"
-            }
+            },
+            {"targets": [6], "visible": false, "orderable": false}
         ],
         "pageLength": 10,
         "bLengthChange": false,
         "pagingType": "simple_numbers",
-        "order":[[1, 'asc']],
+        "order":[[1, 'asc']], 
         "dom": "lrtp"
     });
+
+    $('#datatable tbody').on('click', 'td.details-control', function(){
+        var tr = $(this).closest('tr');
+        var row = datatable.row(tr);
+
+        if(row.child.isShown()){
+            row.child.hide();
+            tr.removeClass('shown');
+            tr.find('td.details-control i').removeClass('fa-minus-circle');
+            tr.find('td.details-control i').addClass('fa-plus-circle');
+        }
+        else {
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+            $('#cfmDetails').parent('td').css('border-top', 0);
+            tr.find('td.details-control i').removeClass('fa-plus-circle');
+            tr.find('td.details-control i').addClass('fa-minus-circle');
+
+        }
+    });
 } //generateDataTable
+
+
+function format(arr){
+    var detailsData = cfmData.filter(function(d){ return d['id'] == arr[arr.length -1]});
+    var table  = '<div id="cfmDetails" class="row d-flex justify-content-center flex-nowrap">'+
+                        // '<td>&nbsp;</td>'+
+                        // '<td>&nbsp;</td>'+
+                        // '<td>'+
+                            '<div>'+
+                                '<span><strong>Number of feeback:</strong> 123</span>'+
+                                '<span><strong>Details: </strong>Details details details details</span>'+
+                                '<span><strong>Frequence: </strong>Ponctual</span>'+
+                                '<span><strong>Contact: </strong>contact@contact.org</span>'+
+                            '</div>'+
+                        // '</td>'+
+                 '</div>';
+    return table;
+}
 
 function generateBarChart(){
     var data = d3.nest() 
