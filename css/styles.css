@@ -1333,3 +1333,9 @@ a {
   .footer span {
     font-size: 0.75rem;
     line-height: 1.5; }
+
+.fa-plus-circle,
+.fa-minus-circle {
+  color: #2f9c67;
+  font-size: 1.1rem;
+  line-height: 1.5; }
