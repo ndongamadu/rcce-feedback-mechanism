@@ -168,13 +168,18 @@ function generateDataTable(){
         if(row.child.isShown()){
             row.child.hide();
             tr.removeClass('shown');
+            tr.css('background-color', '#fff');
             tr.find('td.details-control i').removeClass('fa-minus-circle');
             tr.find('td.details-control i').addClass('fa-plus-circle');
         }
         else {
             row.child(format(row.data())).show();
             tr.addClass('shown');
+            tr.css('background-color', '#f5f5f5');
             $('#cfmDetails').parent('td').css('border-top', 0);
+            // $('#cfmDetails').parent('td').css('padding-top', 0);
+            $('#cfmDetails').parent('td').css('padding', 0);
+            $('#cfmDetails').parent('td').css('background-color', '#f5f5f5');
             tr.find('td.details-control i').removeClass('fa-plus-circle');
             tr.find('td.details-control i').addClass('fa-minus-circle');
 
@@ -185,18 +190,47 @@ function generateDataTable(){
 
 function format(arr){
     var detailsData = cfmData.filter(function(d){ return d['id'] == arr[arr.length -1]});
-    var table  = '<div id="cfmDetails" class="row d-flex justify-content-center flex-nowrap">'+
-                        // '<td>&nbsp;</td>'+
-                        // '<td>&nbsp;</td>'+
-                        // '<td>'+
-                            '<div>'+
-                                '<span><strong>Number of feeback:</strong> 123</span>'+
-                                '<span><strong>Details: </strong>Details details details details</span>'+
-                                '<span><strong>Frequence: </strong>Ponctual</span>'+
-                                '<span><strong>Contact: </strong>contact@contact.org</span>'+
-                            '</div>'+
-                        // '</td>'+
-                 '</div>';
+    
+    var table  = '<table id="cfmDetails" class="tabDetail">'+
+                        '<tr>'+
+                            '<td>&nbsp;</td>'+
+                            '<td>&nbsp;</td>'+
+                            '<td>&nbsp;</td>'+
+                            '<td>'+
+                                '<table>'+
+                                    '<tbody>'+
+                                        '<tr>'+
+                                            '<td>NAME</td>'+
+                                            '<td>name</td>'+
+                                            '<td>CONTACT</td>'+
+                                            '<td>contact</td>'+
+                                        '</tr>'+
+                                        '<tr>'+
+                                            '<td>COLLECTIVE TOOLS</td>'+
+                                            '<td>collective_tools</td>'+
+                                            '<td>OTHER FOCUS</td>'+
+                                            '<td>other_focus</td>'+
+                                        '</tr>'+
+                                        '<tr>'+
+                                            '<td>SCALE</td>'+
+                                            '<td>scale</td>'+
+                                            '<td>START DATE</td>'+
+                                            '<td>start_date</td>'+
+                                        '</tr>'+
+                                        '<tr>'+
+                                            '<td># FEEDBACK</td>'+
+                                            '<td>feedback</td>'+
+                                            '<td>CHANNEL DETAILS</td>'+
+                                            '<td>channel_details</td>'+
+                                            '<td>PARTNERS</td>'+
+                                            '<td>partners</td>'+
+                                        '</tr>'+
+                                    '</tbody>'+
+                                '</table>'+
+                            '</td>'+
+                            '<td>&nbsp;</td>'+
+                        '</tr>'
+                 '</table>';
     return table;
 }
 

@@ -1,3 +1,4 @@
+//v1.0 
 let geodataUrl = 'data/worldmap.json';
 let locationsUrl = 'data/world_locations.csv';
 let cfmDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbPRrmlDfV3WzI-5QizI2ig2AoJo84KS7pSQtXkUiV5BD3s4uxpXqW8rK2sHmNjP2yCavO1XasLyCe/pub?gid=651254408&single=true&output=csv';
