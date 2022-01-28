@@ -1,442 +1,539 @@
 // window.$ = window.jQuery = require('jquery');
-let purposeArr = ['Perception', 'Rumors', 'Questions'],
-    purposeOtherArr = ['suggestions', 'Complaints', 'Accountability'],
-    emergencyArr = ['COVID-19', 'Ebola', 'Dengue'],
-    emergencyOtheArr = ['Protection', 'Migrant', 'Refugeees'];
-// colors 
-let ifrcPink_1 = '#D90368', ifrcPink_2 = '#E27093', ifrcPink_3 = '#E996AD', ifrcPink_4 = '#F0BDC9', ifrcPink_5 = '#FAE7EA';
-let ifrcGreen_1 = '#2F9C67', ifrcGreen_2 = '#78B794', ifrcGreen_3 = '#9EC8AE', ifrcGreen_4 = '#C2DACA', ifrcGreen_5 = '#E9F1EA';
-let ifrcBlue_1 = '#204669', ifrcBlue_2 = '#546B89', ifrcBlue_3 = '#798BA5', ifrcBlue_4 = '#A6B0C3', ifrcBlue_5 = '#DBDEE6';
-let ifrcYellow = '#FCCF9E';
-let mapActiveColor = '#2F9C67',
-    mapInactiveColor = '#C2DACA',//'#d1021a',
-    mapPipelineColor = '#78B794';
-
-var mapColorRangeDefault = [ifrcBlue_3, ifrcBlue_2, ifrcBlue_1];
-// let mapInactive = '#a6d8e8';
-
 let numberCountriesCFM = 0;
 let regionsArr = ['All regions'],
     organisationsArr = ['All organizations'];
 let countriesISO3Arr = [];
 
-let statusChart ;
-
-let datatable;
-
-let focusCovid = ['COVID-19', 'COVID-19, Volcano', 'COVID-19, Accountability'],
-    focusMigrant = ['Migrant'],
-    focusOther = ['Protection'];
-
-var sort_value = function (d1, d2) {
-    if (d1.value > d2.value) return -1;
-    if (d1.value < d2.value) return 1;
-    return 0;
+function choroplethMap(){
+    mapsvg.selectAll('path').each( function(element, index) {
+        // console.log(element)
+        d3.select(this).transition().duration(500).attr('fill', function(d){
+            //var filtered = filteredCfmData.filter(pt => pt['ISO3']== d.properties.ISO_A3);
+            return '#ccc';
+        });
+    });
 }
 
-// get and set # countries with CFM
-function setCountriesAndOrgCFM(){
-    var arrCountries = [],
-        arrOrgs = [];
-    countriesISO3Arr = [];
-    filteredCfmData.forEach(element => {
-        arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
-        arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
-        // regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
-        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
-    });
-    $('#totalCfms').text(filteredCfmData.length);
-    $('#countriesCFM').text(arrCountries.length);
-    $('#orgsCFM').text(arrOrgs.length);
-} //setCountriesAndOrgCFM
 
-// populate regions selections via the data
-function regionSelectionDropdown(){
-    var options = "",
-        orgOptions = "";
-    cfmData.forEach(element => {
-        regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
-        organisationsArr.includes(element['Organisation Name']) ? '' : organisationsArr.push(element['Organisation Name']);
-    });
+//return the unique values of given col name
+function getColumnUniqueValues(){
+    var values = [];
+    for (let index = 0; index < arguments.length; index++) {
+        var arr = [];
+        values.push(arr);
+    }
+    for (let index = 0; index < arguments.length; index++) {
+        var col = arguments[index];
+        var arr = [];
+        filteredCfmData.forEach(element => {
+            arr.includes(element[col]) ? '' : arr.push(element[col]);
+        });
+        values[index] = arr;
+    }
+
+    return values;
+}//getColumnUniqueValues
+
+function generateRegionDropdown(){
+    var options = "";
     for (let index = 0; index < regionsArr.length; index++) {
         const element = regionsArr[index];
         index == 0 ? options += '<option value="all" selected>' + element + '</option>'  : 
             options += '<option value="' + element + '">' + element + '</option>';
     }
+    $('#regionSelect').append(options);
+    $('#all').toggleClass('active');
+
+} //generateRegionDropdown
+
+function generateOrgDropdown(){
+    var options = "";
     for (let index = 0; index < organisationsArr.length; index++) {
         const element = organisationsArr[index];
-        index == 0 ? orgOptions += '<option value="all" selected>' + element + '</option>'  : 
-        orgOptions += '<option value="' + element + '">' + element + '</option>';
+        index == 0 ? options += '<option value="all" selected>' + element + '</option>'  : 
+            options += '<option value="' + element + '">' + element + '</option>';
     }
-    $('#regionSelect').append(options);
-    $('#regionSelect').multipleSelect();
+    $('#orgSelect').append(options);
+    $('#all').toggleClass('active');
 
-    $('#orgSelect').append(orgOptions);
-    $('#orgSelect').multipleSelect({
-        filter: true
-    });
-}//regionSelectionDropdown
+} //generateRegionDropdown
 
-// returns a formatted array with purposes/emergencies 
-function getFormattedColumn(item, column){
-    var items = [] ;
-    var arr = item.split(",");
-    var trimedArr = arr.map(x => x.trim());
-    for (let index = 0; index < trimedArr.length; index++) { //remove empty elements
-        if (trimedArr[index]) {
-            items.push(trimedArr[index])
-        }
-    }
-    var formatedPurposes = "";
-    items.forEach(d => {
-        var className = d.toLowerCase();
-        var arrPurpose = ['perception', 'rumors', 'questions'];
-        var arrFocus = ['covid-19', 'ebola'];
-        if (column == 'Purpose') {
-            arrPurpose.includes(className) ? '' : className = 'purpose-other';
-        } else{
-            arrFocus.includes(className) ? '' : className = 'emergency-other';
-        }
+// let purposeArr = ['Perception', 'Rumors', 'Questions'],
+//     purposeOtherArr = ['suggestions', 'Complaints', 'Accountability'],
+//     emergencyArr = ['COVID-19', 'Ebola', 'Dengue'],
+//     emergencyOtheArr = ['Protection', 'Migrant', 'Refugeees'];
+// // colors 
+// let ifrcPink_1 = '#D90368', ifrcPink_2 = '#E27093', ifrcPink_3 = '#E996AD', ifrcPink_4 = '#F0BDC9', ifrcPink_5 = '#FAE7EA';
+// let ifrcGreen_1 = '#2F9C67', ifrcGreen_2 = '#78B794', ifrcGreen_3 = '#9EC8AE', ifrcGreen_4 = '#C2DACA', ifrcGreen_5 = '#E9F1EA';
+// let ifrcBlue_1 = '#204669', ifrcBlue_2 = '#546B89', ifrcBlue_3 = '#798BA5', ifrcBlue_4 = '#A6B0C3', ifrcBlue_5 = '#DBDEE6';
+// let ifrcYellow = '#FCCF9E';
+// let mapActiveColor = '#2F9C67',
+//     mapInactiveColor = '#C2DACA',//'#d1021a',
+//     mapPipelineColor = '#78B794';
+
+// var mapColorRangeDefault = [ifrcBlue_3, ifrcBlue_2, ifrcBlue_1];
+// // let mapInactive = '#a6d8e8';
+
+// let numberCountriesCFM = 0;
+// let regionsArr = ['All regions'],
+//     organisationsArr = ['All organizations'];
+// let countriesISO3Arr = [];
+
+// let statusChart ;
+
+// let datatable;
+
+// let focusCovid = ['COVID-19', 'COVID-19, Volcano', 'COVID-19, Accountability'],
+//     focusMigrant = ['Migrant'],
+//     focusOther = ['Protection'];
+
+// var sort_value = function (d1, d2) {
+//     if (d1.value > d2.value) return -1;
+//     if (d1.value < d2.value) return 1;
+//     return 0;
+// }
+
+// // get and set # countries with CFM
+// function setCountriesAndOrgCFM(){
+//     var arrCountries = [],
+//         arrOrgs = [];
+//     countriesISO3Arr = [];
+//     filteredCfmData.forEach(element => {
+//         arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
+//         arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
+//         // regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
+//         countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
+//     });
+//     $('#totalCfms').text(filteredCfmData.length);
+//     $('#countriesCFM').text(arrCountries.length);
+//     $('#orgsCFM').text(arrOrgs.length);
+// } //setCountriesAndOrgCFM
+
+// // populate regions selections via the data
+// function regionSelectionDropdown(){
+//     var options = "",
+//         orgOptions = "";
+//     cfmData.forEach(element => {
+//         regionsArr.includes(element['Region']) ? '' : regionsArr.push(element['Region']);
+//         organisationsArr.includes(element['Organisation Name']) ? '' : organisationsArr.push(element['Organisation Name']);
+//     });
+//     for (let index = 0; index < regionsArr.length; index++) {
+//         const element = regionsArr[index];
+//         index == 0 ? options += '<option value="all" selected>' + element + '</option>'  : 
+//             options += '<option value="' + element + '">' + element + '</option>';
+//     }
+//     for (let index = 0; index < organisationsArr.length; index++) {
+//         const element = organisationsArr[index];
+//         index == 0 ? orgOptions += '<option value="all" selected>' + element + '</option>'  : 
+//         orgOptions += '<option value="' + element + '">' + element + '</option>';
+//     }
+//     $('#regionSelect').append(options);
+//     $('#regionSelect').multipleSelect();
+
+//     $('#orgSelect').append(orgOptions);
+//     $('#orgSelect').multipleSelect({
+//         filter: true
+//     });
+// }//regionSelectionDropdown
+
+// // returns a formatted array with purposes/emergencies 
+// function getFormattedColumn(item, column){
+//     var items = [] ;
+//     var arr = item.split(",");
+//     var trimedArr = arr.map(x => x.trim());
+//     for (let index = 0; index < trimedArr.length; index++) { //remove empty elements
+//         if (trimedArr[index]) {
+//             items.push(trimedArr[index])
+//         }
+//     }
+//     var formatedPurposes = "";
+//     items.forEach(d => {
+//         var className = d.toLowerCase();
+//         var arrPurpose = ['perception', 'rumors', 'questions'];
+//         var arrFocus = ['covid-19', 'ebola'];
+//         if (column == 'Purpose') {
+//             arrPurpose.includes(className) ? '' : className = 'purpose-other';
+//         } else{
+//             arrFocus.includes(className) ? '' : className = 'emergency-other';
+//         }
         
-        formatedPurposes +='<label class="alert tag-'+className+'">'+d+'</label>';
-    });
-    return formatedPurposes;
-} // getFormattedColumn
+//         formatedPurposes +='<label class="alert tag-'+className+'">'+d+'</label>';
+//     });
+//     return formatedPurposes;
+// } // getFormattedColumn
 
-function getDataTableData(data = filteredCfmData){
-    var dtData = [];
-    data.forEach(element => {
-        var cfmstatusColor = ifrcGreen_1;
-        // element['Status'] == "Inactive" ? cfmstatusColor =  ifrcGreen_5 : 
-        // element['Status'] == "Pipeline" ? cfmstatusColor =  ifrcGreen_3 : null;
-        dtData.push([
-                    // '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
-                    '',
-                    element['Country'], 
-                    element['Organisation Name'],  
-                    getFormattedColumn(element['Purpose'], 'Purpose'),
-                    getFormattedColumn(element['Emergency'], 'Emergency'),
-                    element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>' : "-",
-                    element['id']
-        ]);
-    });
+// function getDataTableData(data = filteredCfmData){
+//     var dtData = [];
+//     data.forEach(element => {
+//         var cfmstatusColor = ifrcGreen_1;
+//         // element['Status'] == "Inactive" ? cfmstatusColor =  ifrcGreen_5 : 
+//         // element['Status'] == "Pipeline" ? cfmstatusColor =  ifrcGreen_3 : null;
+//         dtData.push([
+//                     // '<i class="fa fa-circle fa-md" style="color:'+cfmstatusColor+';"></i>',
+//                     '',
+//                     element['Country'], 
+//                     element['Organisation Name'],  
+//                     getFormattedColumn(element['Purpose'], 'Purpose'),
+//                     getFormattedColumn(element['Emergency'], 'Emergency'),
+//                     element['Link'] != "" ? '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>' : "-",
+//                     element['id']
+//         ]);
+//     });
 
-    return dtData;
-}
+//     return dtData;
+// }
 
-// generate data table
-function generateDataTable(){
-    var dtData = getDataTableData();
-    datatable = $('#datatable').DataTable({
-        data : dtData,
-        "columns": [
-            {   "width": "1%",  
-                "className": 'details-control', 
-                "orderable": false,
-                "data": null,
-                "defaultContent": '<i class="fa fa-plus-circle"></i>',  
-            },
-            // {"width": "1%","orderable": false},
-            {"width": "15%"},
-            {"width": "20%", "orderable": false},
-            {"width": "45%", "orderable": false},
-            {"width": "50%", "orderable": false},
-            {"width": "1%", "orderable": false}
-            // {"width": "1%", "orderable": false}
-        ],
-        "columnDefs": [
-            {
-                "className": "dt-head-left",
-                "targets": "_all"
-            },
-            {
-                "defaultContent": "-",
-                "targets": "_all"
-            },
-            {"targets": [6], "visible": false, "orderable": false}
-        ],
-        "pageLength": 10,
-        "bLengthChange": false,
-        "pagingType": "simple_numbers",
-        "order":[[1, 'asc']], 
-        "dom": "lrtp"
-    });
+// // generate data table
+// function generateDataTable(){
+//     var dtData = getDataTableData();
+//     datatable = $('#datatable').DataTable({
+//         data : dtData,
+//         "columns": [
+//             {   "width": "1%",  
+//                 "className": 'details-control', 
+//                 "orderable": false,
+//                 "data": null,
+//                 "defaultContent": '<i class="fa fa-plus-circle"></i>',  
+//             },
+//             // {"width": "1%","orderable": false},
+//             {"width": "15%"},
+//             {"width": "20%", "orderable": false},
+//             {"width": "45%", "orderable": false},
+//             {"width": "50%", "orderable": false},
+//             {"width": "1%", "orderable": false}
+//             // {"width": "1%", "orderable": false}
+//         ],
+//         "columnDefs": [
+//             {
+//                 "className": "dt-head-left",
+//                 "targets": "_all"
+//             },
+//             {
+//                 "defaultContent": "-",
+//                 "targets": "_all"
+//             },
+//             {"targets": [6], "visible": false, "orderable": false}
+//         ],
+//         "pageLength": 10,
+//         "bLengthChange": false,
+//         "pagingType": "simple_numbers",
+//         "order":[[1, 'asc']], 
+//         "dom": "lrtp"
+//     });
 
-    $('#datatable tbody').on('click', 'td.details-control', function(){
-        var tr = $(this).closest('tr');
-        var row = datatable.row(tr);
+//     $('#datatable tbody').on('click', 'td.details-control', function(){
+//         var tr = $(this).closest('tr');
+//         var row = datatable.row(tr);
 
-        if(row.child.isShown()){
-            row.child.hide();
-            tr.removeClass('shown');
-            tr.find('td.details-control i').removeClass('fa-minus-circle');
-            tr.find('td.details-control i').addClass('fa-plus-circle');
-        }
-        else {
-            row.child(format(row.data())).show();
-            tr.addClass('shown');
-            $('#cfmDetails').parent('td').css('border-top', 0);
-            tr.find('td.details-control i').removeClass('fa-plus-circle');
-            tr.find('td.details-control i').addClass('fa-minus-circle');
+//         if(row.child.isShown()){
+//             row.child.hide();
+//             tr.removeClass('shown');
+//             tr.css('background-color', '#fff');
+//             tr.find('td.details-control i').removeClass('fa-minus-circle');
+//             tr.find('td.details-control i').addClass('fa-plus-circle');
+//         }
+//         else {
+//             row.child(format(row.data())).show();
+//             tr.addClass('shown');
+//             tr.css('background-color', '#f5f5f5');
+//             $('#cfmDetails').parent('td').css('border-top', 0);
+//             // $('#cfmDetails').parent('td').css('padding-top', 0);
+//             $('#cfmDetails').parent('td').css('padding', 0);
+//             $('#cfmDetails').parent('td').css('background-color', '#f5f5f5');
+//             tr.find('td.details-control i').removeClass('fa-plus-circle');
+//             tr.find('td.details-control i').addClass('fa-minus-circle');
 
-        }
-    });
-} //generateDataTable
+//         }
+//     });
+// } //generateDataTable
 
 
-function format(arr){
-    var detailsData = cfmData.filter(function(d){ return d['id'] == arr[arr.length -1]});
-    var table  = '<div id="cfmDetails" class="row d-flex justify-content-center flex-nowrap">'+
-                        // '<td>&nbsp;</td>'+
-                        // '<td>&nbsp;</td>'+
-                        // '<td>'+
-                            '<div>'+
-                                '<span><strong>Number of feeback:</strong> 123</span>'+
-                                '<span><strong>Details: </strong>Details details details details</span>'+
-                                '<span><strong>Frequence: </strong>Ponctual</span>'+
-                                '<span><strong>Contact: </strong>contact@contact.org</span>'+
-                            '</div>'+
-                        // '</td>'+
-                 '</div>';
-    return table;
-}
+// function format(arr){
+//     var detailsData = cfmData.filter(function(d){ return d['id'] == arr[arr.length -1]});
+    
+//     var table  = '<table id="cfmDetails" class="tabDetail">'+
+//                         '<tr>'+
+//                             '<td>&nbsp;</td>'+
+//                             '<td>&nbsp;</td>'+
+//                             '<td>&nbsp;</td>'+
+//                             '<td>'+
+//                                 '<table>'+
+//                                     '<tbody>'+
+//                                         '<tr>'+
+//                                             '<td>NAME</td>'+
+//                                             '<td>name</td>'+
+//                                             '<td>CONTACT</td>'+
+//                                             '<td>contact</td>'+
+//                                         '</tr>'+
+//                                         '<tr>'+
+//                                             '<td>COLLECTIVE TOOLS</td>'+
+//                                             '<td>collective_tools</td>'+
+//                                             '<td>OTHER FOCUS</td>'+
+//                                             '<td>other_focus</td>'+
+//                                         '</tr>'+
+//                                         '<tr>'+
+//                                             '<td>SCALE</td>'+
+//                                             '<td>scale</td>'+
+//                                             '<td>START DATE</td>'+
+//                                             '<td>start_date</td>'+
+//                                         '</tr>'+
+//                                         '<tr>'+
+//                                             '<td># FEEDBACK</td>'+
+//                                             '<td>feedback</td>'+
+//                                             '<td>CHANNEL DETAILS</td>'+
+//                                             '<td>channel_details</td>'+
+//                                             '<td>PARTNERS</td>'+
+//                                             '<td>partners</td>'+
+//                                         '</tr>'+
+//                                     '</tbody>'+
+//                                 '</table>'+
+//                             '</td>'+
+//                             '<td>&nbsp;</td>'+
+//                         '</tr>'
+//                  '</table>';
+//     return table;
+// }
 
-function generateBarChart(){
-    var data = d3.nest() 
-        .key(function(d) { return d['Status']; })
-        .rollup(function(d) { return d.length ;})
-        .entries(filteredCfmData).sort(sort_value);
-    var arrX = ['x'],
-        arrY = ['Status'];
-    data.forEach(element => {
-        arrX.includes(element.key) ? '' : arrX.push(element.key);
-        arrY.includes(element.key) ? '' : arrY.push(element.value);
-    });
-    var chart = c3.generate({
-        bindto: '#statusChart',
-        size: { height: 100 },
-        // padding: {right: 10, left: 180},
-        data: {
-            x: 'x',
-            columns: [arrX, arrY],
-            type: 'bar'
-        },
-        bar: {
-            width: 10
-        },
-        color: {
-            pattern: [ifrcGreen_2]
-        },
-        axis: {
-            rotated : true,
-          x: {
-              type : 'category',
-              tick: {               
-                outer: false,
-                multiline: false,
-                fit: true,}
-          },
-          y: {
-            tick: {
-                outer: false,
-                format: d3.format('d'),
-                count: 3
-            }
-          } 
-        },
-        // grid: {
-        //      y: {
-        //          show: true
-        //      }
-        // },
-        legend: {
-            show: false
-        },
-        tooltip: {
-            format: {
-                value: function(value){
-                    return d3.format('d')(value)
-                }
-            }
-        }
-    }); 
-    return chart;
-} //generateBarChart 
+// function generateBarChart(){
+//     var data = d3.nest() 
+//         .key(function(d) { return d['Status']; })
+//         .rollup(function(d) { return d.length ;})
+//         .entries(filteredCfmData).sort(sort_value);
+//     var arrX = ['x'],
+//         arrY = ['Status'];
+//     data.forEach(element => {
+//         arrX.includes(element.key) ? '' : arrX.push(element.key);
+//         arrY.includes(element.key) ? '' : arrY.push(element.value);
+//     });
+//     var chart = c3.generate({
+//         bindto: '#statusChart',
+//         size: { height: 100 },
+//         // padding: {right: 10, left: 180},
+//         data: {
+//             x: 'x',
+//             columns: [arrX, arrY],
+//             type: 'bar'
+//         },
+//         bar: {
+//             width: 10
+//         },
+//         color: {
+//             pattern: [ifrcGreen_2]
+//         },
+//         axis: {
+//             rotated : true,
+//           x: {
+//               type : 'category',
+//               tick: {               
+//                 outer: false,
+//                 multiline: false,
+//                 fit: true,}
+//           },
+//           y: {
+//             tick: {
+//                 outer: false,
+//                 format: d3.format('d'),
+//                 count: 3
+//             }
+//           } 
+//         },
+//         // grid: {
+//         //      y: {
+//         //          show: true
+//         //      }
+//         // },
+//         legend: {
+//             show: false
+//         },
+//         tooltip: {
+//             format: {
+//                 value: function(value){
+//                     return d3.format('d')(value)
+//                 }
+//             }
+//         }
+//     }); 
+//     return chart;
+// } //generateBarChart 
 
-// return mapActiveColor, mapInactiveColor or mapPipelineColor based on the corresponding status
-function getColorFromStatus(status, cercle = false) {
-    if (cercle){
-        mapActiveColor = ifrcGreen_1,
-        mapPipelineColor = ifrcYellow,
-        mapInactiveColor = 'grey';
-    }
-    var st = status.trim().toLowerCase();
-    var clr = mapInactive;
-    st == 'active' ? clr = mapActiveColor : 
-    st == 'inactive' ? clr = mapInactiveColor :
-    st == 'pipeline' ? clr = mapPipelineColor : null;
-    return clr;
-} //getColorFromStatus 
+// // return mapActiveColor, mapInactiveColor or mapPipelineColor based on the corresponding status
+// function getColorFromStatus(status, cercle = false) {
+//     if (cercle){
+//         mapActiveColor = ifrcGreen_1,
+//         mapPipelineColor = ifrcYellow,
+//         mapInactiveColor = 'grey';
+//     }
+//     var st = status.trim().toLowerCase();
+//     var clr = mapInactive;
+//     st == 'active' ? clr = mapActiveColor : 
+//     st == 'inactive' ? clr = mapInactiveColor :
+//     st == 'pipeline' ? clr = mapPipelineColor : null;
+//     return clr;
+// } //getColorFromStatus 
 
-// get country CFM color
-function getRightCountryCFMColor(data, cercle = false){
-    if (cercle){
-        mapActiveColor = ifrcGreen_1,
-        mapPipelineColor = ifrcYellow,
-        mapInactiveColor = 'grey';
-    }
-    var color ;
-    if (data.length == 0) {
-        color = mapInactive;//getColorFromStatus(data['Status']);
-    } else if(data.length > 0) {
-        var colors = [];
-        for (let index = 0; index < data.length; index++) {
-            var c = getColorFromStatus(data[index]['Status'], cercle  = cercle);
-            colors.includes(c) ? '' : colors.push(c);            
-        }
-        colors.includes(mapActiveColor) ? color = mapActiveColor :
-        colors.includes(mapPipelineColor) ? color = mapPipelineColor :
-        colors.includes(mapInactiveColor) ? color = mapInactiveColor : null;
+// // get country CFM color
+// function getRightCountryCFMColor(data, cercle = false){
+//     if (cercle){
+//         mapActiveColor = ifrcGreen_1,
+//         mapPipelineColor = ifrcYellow,
+//         mapInactiveColor = 'grey';
+//     }
+//     var color ;
+//     if (data.length == 0) {
+//         color = mapInactive;//getColorFromStatus(data['Status']);
+//     } else if(data.length > 0) {
+//         var colors = [];
+//         for (let index = 0; index < data.length; index++) {
+//             var c = getColorFromStatus(data[index]['Status'], cercle  = cercle);
+//             colors.includes(c) ? '' : colors.push(c);            
+//         }
+//         colors.includes(mapActiveColor) ? color = mapActiveColor :
+//         colors.includes(mapPipelineColor) ? color = mapPipelineColor :
+//         colors.includes(mapInactiveColor) ? color = mapInactiveColor : null;
         
-    }
-    return color;
-}
-// choropleth map
-function choroplethMap(focusArea = "all"){
-    mapsvg.selectAll('path').each( function(element, index) {
-        // console.log(element)
-        d3.select(this).transition().duration(500).attr('fill', function(d){
-            var filtered = filteredCfmData.filter(pt => pt['ISO3']== d.properties.ISO_A3);
-            return getRightCountryCFMColor(filtered);
-        });
-    });
-    // cercle
-    // mapsvg.selectAll('circle').each( function(element, index) {
-    //     // console.log(element)
-    //     d3.select(this).transition().duration(500).attr("r", 3).attr('fill', function(d){
-    //         var filtered = filteredCfmData.filter(pt => pt['ISO3']== d['ISO_A3']);
-    //         // console.log(filtered)
-    //         return getRightCountryCFMColor(filtered, true);
-    //     });
-    // });
-}
+//     }
+//     return color;
+// }
+// // choropleth map
+// function choroplethMap(focusArea = "all"){
+//     mapsvg.selectAll('path').each( function(element, index) {
+//         // console.log(element)
+//         d3.select(this).transition().duration(500).attr('fill', function(d){
+//             var filtered = filteredCfmData.filter(pt => pt['ISO3']== d.properties.ISO_A3);
+//             return getRightCountryCFMColor(filtered);
+//         });
+//     });
+//     // cercle
+//     // mapsvg.selectAll('circle').each( function(element, index) {
+//     //     // console.log(element)
+//     //     d3.select(this).transition().duration(500).attr("r", 3).attr('fill', function(d){
+//     //         var filtered = filteredCfmData.filter(pt => pt['ISO3']== d['ISO_A3']);
+//     //         // console.log(filtered)
+//     //         return getRightCountryCFMColor(filtered, true);
+//     //     });
+//     // });
+// }
 
-// update viz based on filtered and selections
-function updateViz() {
-    setCountriesAndOrgCFM();
-    choroplethMap();
-    var data = d3.nest() 
-        .key(function(d) { return d['Status']; })
-        .rollup(function(d) { return d.length ;})
-        .entries(filteredCfmData).sort(sort_value);
-    var arrX = ['x'],
-        arrY = ['Status'];
-    data.forEach(element => {
-        arrX.includes(element.key) ? '' : arrX.push(element.key);
-        arrY.includes(element.key) ? '' : arrY.push(element.value);
-    });
-    // statusChart.load({columns: [arrX, arrY], unload: true });
+// // update viz based on filtered and selections
+// function updateViz() {
+//     setCountriesAndOrgCFM();
+//     choroplethMap();
+//     var data = d3.nest() 
+//         .key(function(d) { return d['Status']; })
+//         .rollup(function(d) { return d.length ;})
+//         .entries(filteredCfmData).sort(sort_value);
+//     var arrX = ['x'],
+//         arrY = ['Status'];
+//     data.forEach(element => {
+//         arrX.includes(element.key) ? '' : arrX.push(element.key);
+//         arrY.includes(element.key) ? '' : arrY.push(element.value);
+//     });
+//     // statusChart.load({columns: [arrX, arrY], unload: true });
 
-    // update datatable
-    var dt = getDataTableData();
-    $('#datatable').dataTable().fnClearTable();
-    $('#datatable').dataTable().fnAddData(dt);
+//     // update datatable
+//     var dt = getDataTableData();
+//     $('#datatable').dataTable().fnClearTable();
+//     $('#datatable').dataTable().fnAddData(dt);
 
-    // reset CFM purpose text
-    // $('.purpose > span > label').text("(Select Country)");
-} //updateViz
+//     // reset CFM purpose text
+//     // $('.purpose > span > label').text("(Select Country)");
+// } //updateViz
 
-//filter 
-function purposeByItem(item, arr) {
-	var included = false;
-	for (var i=0; i<arr.length; i++) {
-	  if (item.includes(arr[i])) {
-	    included = true;
-	    break;
-	  }
-	}
-	return included;
-}
+// //filter 
+// function purposeByItem(item, arr) {
+// 	var included = false;
+// 	for (var i=0; i<arr.length; i++) {
+// 	  if (item.includes(arr[i])) {
+// 	    included = true;
+// 	    break;
+// 	  }
+// 	}
+// 	return included;
+// }
 
-function clickButton(){
-    var val = this.value;
-    var colName = (['Perception', 'Rumors', 'Questions', 'purpose-other'].includes(val)) ? 'Purpose' : 
-                (['COVID-19', 'Ebola', 'emergency-other'].includes(val)) ? 'Emergency' : "";
-    var filteredData = filteredCfmData.filter(function(d){
-        if (colName == 'Purpose') {
-            if (val != 'purpose-other') {
-                return d['Purpose'].includes(val);
-            } else {
-                return (d['Purpose'].includes('Suggestions') || d['Purpose'].includes('Complaints') || d['Purpose'].includes('Accountability'));
-            }
-        } else if (colName == 'Emergency') {
-            if (val == 'COVID-19' || val == 'Ebola') {
-                return d['Emergency'].includes(val);
-            } else {
-                // return (d['Emergency'].includes('Migrant') || d['Emergency'].includes('Protection') || d['Emergency'].includes('Refugees'));
-                return (d['Emergency'].includes(['Migrant']) || d['Emergency'].includes(['Refugees']) || d['Emergency'].includes(['Volcano']) || d['Emergency'].includes(['Dengue']) || d['Emergency'].includes(['Protection']) || d['Emergency'].includes(['Youth']));
-            }
-        }
-    });
+// function clickButton(){
+//     var val = this.value;
+//     var colName = (['Perception', 'Rumors', 'Questions', 'purpose-other'].includes(val)) ? 'Purpose' : 
+//                 (['COVID-19', 'Ebola', 'emergency-other'].includes(val)) ? 'Emergency' : "";
+//     var filteredData = filteredCfmData.filter(function(d){
+//         if (colName == 'Purpose') {
+//             if (val != 'purpose-other') {
+//                 return d['Purpose'].includes(val);
+//             } else {
+//                 return (d['Purpose'].includes('Suggestions') || d['Purpose'].includes('Complaints') || d['Purpose'].includes('Accountability'));
+//             }
+//         } else if (colName == 'Emergency') {
+//             if (val == 'COVID-19' || val == 'Ebola') {
+//                 return d['Emergency'].includes(val);
+//             } else {
+//                 // return (d['Emergency'].includes('Migrant') || d['Emergency'].includes('Protection') || d['Emergency'].includes('Refugees'));
+//                 return (d['Emergency'].includes(['Migrant']) || d['Emergency'].includes(['Refugees']) || d['Emergency'].includes(['Volcano']) || d['Emergency'].includes(['Dengue']) || d['Emergency'].includes(['Protection']) || d['Emergency'].includes(['Youth']));
+//             }
+//         }
+//     });
 
-    // // update datatable
-    var dt = getDataTableData(filteredData);
-    $('#datatable').dataTable().fnClearTable();
-    $('#datatable').dataTable().fnAddData(dt);
-}// clickButton
+//     // // update datatable
+//     var dt = getDataTableData(filteredData);
+//     $('#datatable').dataTable().fnClearTable();
+//     $('#datatable').dataTable().fnAddData(dt);
+// }// clickButton
 
-var buttons = document.getElementsByClassName("filter");
-for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener("click", clickButton);        
-}
+// var buttons = document.getElementsByClassName("filter");
+// for (var i = 0; i < buttons.length; i++) {
+//     buttons[i].addEventListener("click", clickButton);        
+// }
 
-function getFilteredDataFromSelection(){
-    var regionSelected = $('#regionSelect').val();
-    var orgSelected = $('#orgSelect').val();
-    if ((regionSelected == "all") && (orgSelected == "all")) {        
-        // reset map zoom to global
-        mapsvg.transition()
-        .duration(750)
-        .call(zoom.transform, d3.zoomIdentity);
-        return cfmData;
-    } else if((regionSelected != "all") && (orgSelected != "all")){
-        return cfmData.filter(function(d){
-            return ((d['Region'] == regionSelected) && (d['Organisation Name'] == orgSelected));
-        }) 
-    } else {
-        var columnOfInterest = "",
-            valueOfInterest = "";
-        if (regionSelected != 'all') {
-            columnOfInterest = 'Region';
-            valueOfInterest = regionSelected;
-        } else {
-            columnOfInterest = 'Organisation Name';
-            valueOfInterest = orgSelected;
-        }
-        return cfmData.filter(function(d){
-            return d[columnOfInterest] == valueOfInterest;
-        })
-    }
-} //getFilteredDataFromSelection
+// function getFilteredDataFromSelection(){
+//     var regionSelected = $('#regionSelect').val();
+//     var orgSelected = $('#orgSelect').val();
+//     if ((regionSelected == "all") && (orgSelected == "all")) {        
+//         // reset map zoom to global
+//         mapsvg.transition()
+//         .duration(750)
+//         .call(zoom.transform, d3.zoomIdentity);
+//         return cfmData;
+//     } else if((regionSelected != "all") && (orgSelected != "all")){
+//         return cfmData.filter(function(d){
+//             return ((d['Region'] == regionSelected) && (d['Organisation Name'] == orgSelected));
+//         }) 
+//     } else {
+//         var columnOfInterest = "",
+//             valueOfInterest = "";
+//         if (regionSelected != 'all') {
+//             columnOfInterest = 'Region';
+//             valueOfInterest = regionSelected;
+//         } else {
+//             columnOfInterest = 'Organisation Name';
+//             valueOfInterest = orgSelected;
+//         }
+//         return cfmData.filter(function(d){
+//             return d[columnOfInterest] == valueOfInterest;
+//         })
+//     }
+// } //getFilteredDataFromSelection
+// map js
+let countriesArr = [];
 let g, mapsvg, projection, width, height, zoom, path;
+let viewportWidth = window.innerWidth;
 let currentZoom = 1;
-
+let mapClicked = false;
+let selectedCountryFromMap = "all";
 let countrySelectedFromMap = false;
-let mapFillColor = '#9EC8AE', 
-    mapInactive = '#fff',//'#f1f1ee',//'#C2C4C6',
+let mapFillColor = '#204669',//'#C2DACA',//'#2F9C67', 
+    mapInactive = '#fff',//'#DBDEE6',//'#f1f1ee',//'#C2C4C6',
     mapActive = '#2F9C67',
-    hoverColor = '#78B794';
+    hoverColor = '#2F9C67';//'#78B794';
 
 function initiateMap() {
-    width = $('#map').width();
+    width = viewportWidth;
     height = 500;
-    var mapScale = width/7.8;
+    var mapScale = width/10.6;
     var mapCenter = [25, 25];
 
     projection = d3.geoMercator()
         .center(mapCenter)
         .scale(mapScale)
-        .translate([width / 2, height / 1.9]);
+        .translate([width / 2.9, height / 1.6]);
 
     path = d3.geoPath().projection(projection);
 
@@ -454,7 +551,10 @@ function initiateMap() {
     
     mapsvg.append("rect")
         .attr("width", "100%")
-        .attr("height", "100%");
+        .attr("height", "100%")
+        // .attr("fill", "#99daea");
+        .attr("fill", "#ccd4d8");
+
     //map tooltips
     var maptip = d3.select('#map').append('div').attr('class', 'd3-tip map-tip hidden');
 
@@ -465,34 +565,23 @@ function initiateMap() {
             .append("path")
             .attr('d',path)
             .attr('id', function(d){ 
-                return d.properties.ISO_A3; 
+                return d.properties.countryIso3Code; 
             })
             .attr('class', function(d){
-              var className = (countriesISO3Arr.includes(d.properties.ISO_A3)) ? 'hasCFM' : 'inactive';
+              var className = (countriesISO3Arr.includes(d.properties.ISO_A3)) ? 'hasStudy' : 'inactive';
               return className;
-          });
-    // cercles 
-    // var centroids = mapsvg.append("g")
-    //       .attr("class", "centroids")
-    //       .selectAll("centroid")
-    //       .data(locations)
-    //       .enter()
-    //         .append("g")
-    //         // .append("centroid")
-    //         .append("circle")
-    //         .attr('id', function(d){ 
-    //           return d["ISO_A3"]; 
-    //         })
-    //         .attr('class', function(d){
-    //           var className = (countriesISO3Arr.includes(d["ISO_A3"])) ? 'hasCFM' : 'inactive';
-    //           return className;
-    //       })
-    //       .attr("transform", function(d){ return "translate(" + projection([d.X, d.Y]) + ")"; });
+            })
+            .attr('fill', function(d){
+              return countriesISO3Arr.includes(d.properties.ISO_A3) ? mapFillColor : mapInactive ;
+            })
+            .attr('stroke-width', .2)
+            .attr('stroke', '#fff');
+
     mapsvg.transition()
     .duration(750)
     .call(zoom.transform, d3.zoomIdentity);
 
-    choroplethMap();
+    // choroplethMap();
 
     //zoom controls
     d3.select("#zoom_in").on("click", function() {
@@ -501,45 +590,50 @@ function initiateMap() {
     d3.select("#zoom_out").on("click", function() {
         zoom.scaleBy(mapsvg.transition().duration(500), 0.5);
     });
-            
     
-    // var tipPays = d3.select('#countries').selectAll('path') 
-    g.filter('.hasCFM')
+    var tipPays = d3.select('#countries').selectAll('path') 
+    g.filter('.hasStudy')
     .on("mousemove", function(d){ 
-      var countryCfmData = filteredCfmData.filter(c => c['ISO3'] == d.properties.ISO_A3);
-      if (countryCfmData.length != 0) {
-        var content = '<h5>' + d.properties.NAME_LONG + '</h5>';
-        var numActive = 0, 
-            numInactive = 0, 
-            numPipeline = 0;
-        countryCfmData.forEach(element => {
-          element['Status'] == 'Active' ? numActive++ :
-          element['Status'] == 'Inactive' ? numInactive++ :
-          element['Status'] == 'Pipeline' ? numPipeline++ : null;
-        });
-        content += '<div>' +
-              '<div><label><i class="fa fa-circle fa-sm" style="color:#2F9C67;"></i> Active: '+numActive+'</label></div>' +
-              '<div><label><i class="fa fa-circle fa-sm" style="color:#9EC8AE;"></i> Pipeline: '+numPipeline+'</label></div>' +
-              '<div><label><i class="fa fa-circle fa-sm" style="color:#E9F1EA;"></i> Inactive: '+numInactive+'</label></div>' +
-              '</div>';
-
-        showMapTooltip(d, maptip, content);
-      }
-    //   showMapTooltip(d, maptip, "Qu'est ce qui se passe?");
+        if ( !$(this).hasClass('clicked')) {
+            $(this).attr('fill', hoverColor);
+        }
+        if (!mapClicked) {
+            // generateCountrytDetailPane(d.properties.ISO_A3, d.properties.NAME);
+        }
+        var mouse = d3.mouse(mapsvg.node()).map( function(d) { return parseInt(d); } );
+        maptip
+            .classed('hidden', false)
+            .attr('style', 'left:'+(mouse[0])+'px; top:'+(mouse[1]+25)+'px')
+            .html(d.properties.NAME);
+        
     })
     .on("mouseout", function(d) { 
-      hideMapTooltip(maptip); 
+        if ( !$(this).hasClass('clicked')) {
+            $(this).attr('fill', mapFillColor);
+        }
+        if (!mapClicked) {
+            // generateDefaultDetailPane();
+        }
+        maptip.classed('hidden', true);
     })
     .on("click", function(d){
-      // $('.purpose > span > label').text("( " +d.properties.NAME+" )");
-      var data = filteredCfmData.filter(function(p) { return p['ISO3'] == d.properties.ISO_A3 ; });
-      var dt = getDataTableData(data);
-      $('#datatable').dataTable().fnClearTable();
-      $('#datatable').dataTable().fnAddData(dt);
-      countrySelectedFromMap = true;
+        mapClicked = true;
+        selectedCountryFromMap = d.properties.NAME ;
+        mapsvg.select('g').selectAll('.hasStudy').attr('fill', mapFillColor);
+
+        $(this).attr('fill', hoverColor);
+        $(this).addClass('clicked');
+        // var countryData = getDataTableDataFromMap(d.properties.ISO_A3);
+        // updateDataTable(countryData);
+        // generateOverviewclicked(d.properties.ISO_A3, d.properties.NAME);
+        // $('.btn').removeClass('active');
+        // $('#all').toggleClass('active');
+        // $('#regionSelect').val('all');
+        
     })
 
 } //initiateMap
+
 
 function showMapTooltip(d, maptip, text){
 var mouse = d3.mouse(mapsvg.node()).map( function(d) { return parseInt(d); } );
@@ -607,12 +701,159 @@ function getFirstCountryOfRegion(region){
   region == 'EURO' ? country = 'TUR' : '';
   return country;
 } //getFirstCountryOfRegion
-let geodataUrl = 'data/worldmap.json';
-let locationsUrl = 'data/world_locations.csv';
-let cfmDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbPRrmlDfV3WzI-5QizI2ig2AoJo84KS7pSQtXkUiV5BD3s4uxpXqW8rK2sHmNjP2yCavO1XasLyCe/pub?gid=651254408&single=true&output=csv';
+
+function getDataTableData(data = filteredCfmData){
+    var dt = [];
+    data.forEach(element => {
+        dt.push(
+            [
+                element['id'],
+                element['Country'],
+            // getFormattedDimension(element['dimension']), 
+                element['Organisation Name'],
+                element['Frequency'], 
+                element['Channels'],
+                element['Emergency'], 
+                '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>',
+            ]
+        );
+    });
+    return dt;
+} //getDataTableData
+
+// generate data table
+function generateDataTable(){
+    var dtData = getDataTableData();
+    datatable = $('#datatable').DataTable({
+        data : dtData,
+        "columns": [
+            {
+                "className": 'details-control',
+                "orderable": false,
+                "data": null,
+                "defaultContent": '<i class="fa fa-plus-circle"></i>',
+                "width": "1%"
+            },
+            {"width": "10%"},
+            {"width": "10%"},
+            {"width": "5%"},
+            {"width": "35%"},
+            {"width": "15%"},
+            {"width": "1%"}
+        ],
+        "columnDefs": [
+            {
+                "className": "dt-head-left",
+                "targets": "_all"
+            },
+            {
+                "defaultContent": "-",
+                "targets": "_all"
+            },
+            // {"targets": [7], "visible": false},{"targets": [8], "visible": false},{"targets": [9], "visible": false},
+            // {"targets": [10], "visible": false},{"targets": [11], "visible": false},{"targets": [12], "visible": false},
+            // {"targets": [13], "visible": false},{"targets": [14], "visible": false},{"targets": [15], "visible": false},
+            // { "searchable" : true, "targets": "_all"},
+            // {"type": "myDate","targets": 4}
+        ],
+        "pageLength": 10,
+        "bLengthChange": false,
+        "pagingType": "simple_numbers",
+        // "order":[[0, 'asc']],
+        "dom": "Blrtp",
+        "buttons": {
+            "buttons": [
+                {
+                    extend: 'excelHtml5',
+                    "className": "exportData",
+                    exportOptions:{
+                        // columns: ':visible',
+                        rows: ':visible',
+                        // format:{
+                        //     header: function(data, columnIdx){
+                        //         var hd = ['details', 'authors', 'countries', 'variables', 'source_comment','methodology','target_pop','sample_type','quality_check'];
+                        //         if(columnIdx >= 7){
+                        //             return hd[columnIdx-7];
+                        //         }else {
+                        //             return data;
+                        //         }
+                        //     }
+                        // }
+                    }
+                }
+            ]
+        }
+    });
+
+    $('#datatable tbody').on('click', 'td.details-control', function(){
+        var tr = $(this).closest('tr');
+        var row = datatable.row(tr);
+        if(row.child.isShown()){
+            row.child.hide();
+            tr.removeClass('shown');
+            tr.css('background-color', '#fff');
+            tr.find('td.details-control i').removeClass('fa-minus-circle');
+            tr.find('td.details-control i').addClass('fa-plus-circle');
+        }
+        else {
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+            tr.css('background-color', '#f5f5f5');
+            $('#cfmDetails').parent('td').css('border-top', 0);
+            $('#cfmDetails').parent('td').css('padding', 0);
+            $('#cfmDetails').parent('td').css('background-color', '#f5f5f5');
+            tr.find('td.details-control i').removeClass('fa-plus-circle');
+            tr.find('td.details-control i').addClass('fa-minus-circle');
+    
+        }
+    });
+} //generateDataTable
+
+function format(arr){
+    filtered = cfmData.filter(function(d){ return d['id']==arr[0]; });
+    return '<table class="tabDetail" id="cfmDetails" >'+
+    '<tr>'+
+                                '<td>&nbsp;</td>'+
+                                '<td>&nbsp;</td>'+
+                                '<td>&nbsp;</td>'+
+                                '<td>'+
+                                    '<table>'+
+                                        '<tbody>'+
+                                            '<tr>'+
+                                                '<td><strong>Name</strong></td>'+
+                                                '<td>'+filtered[0]['Name']+'</td>'+
+                                                '<td><strong>Status<s/trong></td>'+
+                                                '<td>'+filtered[0]['Status']+'</td>'+
+                                            '</tr>'+
+                                            '<tr>'+
+                                                '<td><strong>Scale</strong></td>'+
+                                                '<td>'+filtered[0]['Scale']+'</td>'+
+                                                '<td><strong>Start date</strong></td>'+
+                                                '<td>'+filtered[0]['Start date']+'</td>'+
+                                                '<td><strong>Keywords</strong></td>'+
+                                                '<td>'+filtered[0]['Keyword']+'</td>'+
+                                            '</tr>'+
+                                            '<tr>'+
+                                                '<td><strong>Partners<strong></td>'+
+                                                '<td>'+filtered[0]['Partners']+'</td>'+
+                                                '<td><strong># Feedbacks</strong></td>'+
+                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
+                                                '<td><strong>Details<strong></td>'+
+                                                '<td>'+filtered[0]['Details']+'</td>'+
+
+                                            '</tr>'+
+                                        '</tbody>'+
+                                    '</table>'+
+                                '</td>'+
+                                '<td>&nbsp;</td>'+
+                            '</tr>'
+            '</table>'
+}//format
+//v1.0 
+let geodataUrl = 'data/wld.json';
+let cfmDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbPRrmlDfV3WzI-5QizI2ig2AoJo84KS7pSQtXkUiV5BD3s4uxpXqW8rK2sHmNjP2yCavO1XasLyCe/pub?gid=126026288&single=true&output=csv';
 
 let geomData,
-    locations,
     cfmData,
     filteredCfmData;
 
@@ -621,20 +862,25 @@ $( document ).ready(function(){
     function getData(){
         Promise.all([
             d3.json(geodataUrl),
-            d3.csv(locationsUrl),
             d3.csv(cfmDataUrl)
         ]).then(function(data){
-            geomData = topojson.feature(data[0], data[0].objects.geom);
+            geomData = topojson.feature(data[0], data[0].objects.worldtopo12022020);
             var id = 0;
-            data[2].forEach(element => {
+            data[1].forEach(element => {
                 element['id'] = id + 1;
                 id = id + 1 +Math.floor(Math.random() * 10);
             });
-            cfmData = data[2];
-            locations = data[1];
-            filteredCfmData = data[2];
-            setCountriesAndOrgCFM();
-            regionSelectionDropdown();
+            cfmData = data[1];
+            filteredCfmData = data[1];
+            console.log(cfmData)
+            var colUniqueValues = getColumnUniqueValues('Country', 'ISO3', 'Region', 'Organisation Name');
+            countriesArr = colUniqueValues[0],
+            countriesISO3Arr = colUniqueValues[1],
+            regionsArr.push(...colUniqueValues[2]),
+            organisationsArr.push(...colUniqueValues[3]);
+            
+            generateRegionDropdown();
+            generateOrgDropdown();
             initiateMap();
             generateDataTable();
             //remove loader and show vis
