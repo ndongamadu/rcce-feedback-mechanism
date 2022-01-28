@@ -13,3 +13,40 @@ function choroplethMap(){
     });
 }
 
+function generateDefaultDetailPane(){
+    var orgNums = organisationsArr.length - 1;
+    $('.details > h6').text('global overwiew');
+    $('#globalStats').html('');
+    $('#globalStats')
+        .append(
+            '<div class="row">'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="totalCfms">'+cfmData.length+'</div>'+
+                    '<h5># feedback mechanisms</h5>'+
+                '</div>'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="countriesCFM">'+countriesISO3Arr.length+'</div>'+
+                    '<h5># countries</h5>'+
+                '</div>'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="orgsCFM">'+orgNums+'</div>'+
+                    '<h5># organizations</h5>'+
+                '</div>'+
+            '</div>'
+        );
+    $('#overview').addClass('hidden');
+    $('#globalStats').removeClass('hidden');
+} // generateDefaultDetailPane
+
+function updatePane(data, title){
+    var arrCountries = [],
+        arrOrgs = [];
+    data.forEach(element => {
+        arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
+        arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
+    });
+    $('.details > h6').text(title);
+    $('#totalCfms').text(data.length);
+    $('#countriesCFM').text(arrCountries.length);
+    $('#orgsCFM').text(arrOrgs.length);
+}

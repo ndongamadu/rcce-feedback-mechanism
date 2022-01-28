@@ -21,13 +21,13 @@ $( document ).ready(function(){
             });
             cfmData = data[1];
             filteredCfmData = data[1];
-            console.log(cfmData)
             var colUniqueValues = getColumnUniqueValues('Country', 'ISO3', 'Region', 'Organisation Name');
             countriesArr = colUniqueValues[0],
             countriesISO3Arr = colUniqueValues[1],
             regionsArr.push(...colUniqueValues[2]),
             organisationsArr.push(...colUniqueValues[3]);
             
+            generateDefaultDetailPane();
             generateRegionDropdown();
             generateOrgDropdown();
             initiateMap();
@@ -41,39 +41,3 @@ $( document ).ready(function(){
     getData();
 });
 
-$('#orgSelect').on('change', function(d){
-    filteredCfmData = getFilteredDataFromSelection();
-    filteredCfmData.forEach(element => {
-        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
-    });
-    updateViz();
-});
-
-$('#regionSelect').on('change', function(e){
-    var select = $('#regionSelect').val();
-    // select != "all" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
-    filteredCfmData = getFilteredDataFromSelection();
-
-    filteredCfmData.forEach(element => {
-        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
-    });
-    updateViz();
-    // zoom to region 
-    // if (select == 'all') {
-    //     mapsvg.transition()
-    //     .duration(750)
-    //     .call(zoom.transform, d3.zoomIdentity);
-    // }
-    zoomToRegion(select);
-    // reset layers selection to all
-    // $('#all').prop('checked', true);
-
-  });
-
-$('#reset-table').on('click', function(){
-    // if(countrySelectedFromMap){
-    var dt = getDataTableData();
-    $('#datatable').dataTable().fnClearTable();
-    $('#datatable').dataTable().fnAddData(dt)
-    // }
-});

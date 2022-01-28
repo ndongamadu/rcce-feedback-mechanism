@@ -62,7 +62,7 @@ function initiateMap() {
               return countriesISO3Arr.includes(d.properties.ISO_A3) ? mapFillColor : mapInactive ;
             })
             .attr('stroke-width', .2)
-            .attr('stroke', '#fff');
+            .attr('stroke', '#ccc');
 
     mapsvg.transition()
     .duration(750)
@@ -110,8 +110,12 @@ function initiateMap() {
 
         $(this).attr('fill', hoverColor);
         $(this).addClass('clicked');
-        // var countryData = getDataTableDataFromMap(d.properties.ISO_A3);
-        // updateDataTable(countryData);
+        var countryData = filteredCfmData.filter(function(val){
+            return d.properties.ISO_A3 == val['ISO3'] ;
+        });
+        updateDataTable(countryData);
+        // desactivate org and reg filters
+        
         // generateOverviewclicked(d.properties.ISO_A3, d.properties.NAME);
         // $('.btn').removeClass('active');
         // $('#all').toggleClass('active');

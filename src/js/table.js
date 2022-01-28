@@ -119,26 +119,35 @@ function format(arr){
                                             '<tr>'+
                                                 '<td><strong>Name</strong></td>'+
                                                 '<td>'+filtered[0]['Name']+'</td>'+
-                                                '<td><strong>Status<s/trong></td>'+
-                                                '<td>'+filtered[0]['Status']+'</td>'+
+                                                '<td><strong>Start date</strong></td>'+
+                                                '<td>'+filtered[0]['Start date']+'</td>'+
+                                                '<td><strong># Feedback</strong></td>'+
+                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
                                             '</tr>'+
                                             '<tr>'+
                                                 '<td><strong>Scale</strong></td>'+
                                                 '<td>'+filtered[0]['Scale']+'</td>'+
-                                                '<td><strong>Start date</strong></td>'+
-                                                '<td>'+filtered[0]['Start date']+'</td>'+
+                                                '<td><strong>National Coordination<strong></td>'+
+                                                '<td>'+filtered[0]['National Coordination']+'</td>'+
+                                                '<td><strong>Partners<strong></td>'+
+                                                '<td>'+filtered[0]['Partners']+'</td>'+
+                                            '</tr>'+
+                                            '<tr>'+
+                                                '<td><strong>Status<s/trong></td>'+
+                                                '<td>'+filtered[0]['Status']+'</td>'+
+                                                '<td><strong>Interagency</strong></td>'+
+                                                '<td>'+filtered[0]['Inter-agency']+'</td>'+
                                                 '<td><strong>Keywords</strong></td>'+
                                                 '<td>'+filtered[0]['Keyword']+'</td>'+
                                             '</tr>'+
                                             '<tr>'+
-                                                '<td><strong>Partners<strong></td>'+
-                                                '<td>'+filtered[0]['Partners']+'</td>'+
-                                                '<td><strong># Feedbacks</strong></td>'+
-                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
+                                                '<td><strong>Target</strong></td>'+
+                                                '<td>'+filtered[0]['Target']+'</td>'+
+                                                '<td><strong>Contact<strong></td>'+
+                                                '<td>'+filtered[0]['Contact Email']+'</td>'+
                                                 '<td><strong>Details<strong></td>'+
                                                 '<td>'+filtered[0]['Details']+'</td>'+
-
-                                            '</tr>'+
+                                        '</tr>'+
                                         '</tbody>'+
                                     '</table>'+
                                 '</td>'+
@@ -146,3 +155,62 @@ function format(arr){
                             '</tr>'
             '</table>'
 }//format
+
+function updateDataTable(data = cfmData){
+    var dt = getDataTableData(data);
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt);
+
+} //updateDataTable
+
+
+$('#orgSelect').on('change', function(d){
+    var select = $('#orgSelect').val();
+    var filter = cfmData;
+    select != "all" ? filter = cfmData.filter(function(d){ return d['Organisation Name'] == select ; }): null;
+    
+    $('#regionSelect').val('all');
+    updateDataTable(filter);
+    updatePane(filter, select);
+});
+
+$('#regionSelect').on('change', function(e){
+    var select = $('#regionSelect').val();
+    var filter = filteredCfmData;
+    
+    select != "all" ? filter = filteredCfmData.filter(function(d){ return d['Region'] == select ; }) : null;
+    // filteredCfmData = getFilteredDataFromSelection();
+
+    // filteredCfmData.forEach(element => {
+    //     countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
+    // });
+    $('#orgSelect').val('all');
+    updateDataTable(filter);
+    updatePane(filter, select);
+    // reset others filters
+
+    // updateViz();
+    // zoom to region 
+    // if (select == 'all') {
+    //     mapsvg.transition()
+    //     .duration(750)
+    //     .call(zoom.transform, d3.zoomIdentity);
+    // }
+    // zoomToRegion(select);
+    // reset layers selection to all
+    // $('#all').prop('checked', true);
+
+  });
+
+$('#reset-table').on('click', function(){
+    $('#regionSelect').val('all');
+    $('#orgSelect').val('all');
+    generateDefaultDetailPane();
+    // reset map selection
+    mapsvg.select('g').selectAll('.hasStudy').attr('fill', mapFillColor);
+    // if(countrySelectedFromMap){
+    var dt = getDataTableData();
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt)
+    // }
+});
