@@ -1072,13 +1072,10 @@
 body {
   font-family: "Source Sans Pro", sans-serif;
   font-size: 0.75rem;
-  line-height: 1.5;
-  padding-left: 10px;
-  padding-right: 10px; }
+  line-height: 1.5; }
 
 #main {
-  opacity: 0;
-  padding-bottom: 10px; }
+  opacity: 0; }
 
 .sur-couche {
   right: 45px;
@@ -1135,7 +1132,6 @@ body {
 #map {
   width: 100%;
   height: 500px;
-  padding-top: 10px;
   position: relative; }
   #map .zoom-controls {
     position: absolute;
@@ -1178,10 +1174,6 @@ body {
       font-family: "Gotham-Bold", sans-serif;
       font-size: 13px;
       line-height: 13px; }
-
-#countries {
-  stroke: #ccc;
-  stroke-width: 0.01; }
 
 #countries path {
   cursor: pointer; }

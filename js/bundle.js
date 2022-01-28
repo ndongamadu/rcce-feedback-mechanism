@@ -14,6 +14,43 @@ function choroplethMap(){
     });
 }
 
+function generateDefaultDetailPane(){
+    var orgNums = organisationsArr.length - 1;
+    $('.details > h6').text('global overwiew');
+    $('#globalStats').html('');
+    $('#globalStats')
+        .append(
+            '<div class="row">'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="totalCfms">'+cfmData.length+'</div>'+
+                    '<h5># feedback mechanisms</h5>'+
+                '</div>'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="countriesCFM">'+countriesISO3Arr.length+'</div>'+
+                    '<h5># countries</h5>'+
+                '</div>'+
+                '<div class="col-sm-4 key-figure">'+
+                    '<div class="num" id="orgsCFM">'+orgNums+'</div>'+
+                    '<h5># organizations</h5>'+
+                '</div>'+
+            '</div>'
+        );
+    $('#overview').addClass('hidden');
+    $('#globalStats').removeClass('hidden');
+} // generateDefaultDetailPane
+
+function updatePane(data, title){
+    var arrCountries = [],
+        arrOrgs = [];
+    data.forEach(element => {
+        arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
+        arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
+    });
+    $('.details > h6').text(title);
+    $('#totalCfms').text(data.length);
+    $('#countriesCFM').text(arrCountries.length);
+    $('#orgsCFM').text(arrOrgs.length);
+}
 
 //return the unique values of given col name
 function getColumnUniqueValues(){
@@ -575,7 +612,7 @@ function initiateMap() {
               return countriesISO3Arr.includes(d.properties.ISO_A3) ? mapFillColor : mapInactive ;
             })
             .attr('stroke-width', .2)
-            .attr('stroke', '#fff');
+            .attr('stroke', '#ccc');
 
     mapsvg.transition()
     .duration(750)
@@ -623,8 +660,12 @@ function initiateMap() {
 
         $(this).attr('fill', hoverColor);
         $(this).addClass('clicked');
-        // var countryData = getDataTableDataFromMap(d.properties.ISO_A3);
-        // updateDataTable(countryData);
+        var countryData = filteredCfmData.filter(function(val){
+            return d.properties.ISO_A3 == val['ISO3'] ;
+        });
+        updateDataTable(countryData);
+        // desactivate org and reg filters
+        
         // generateOverviewclicked(d.properties.ISO_A3, d.properties.NAME);
         // $('.btn').removeClass('active');
         // $('#all').toggleClass('active');
@@ -822,26 +863,35 @@ function format(arr){
                                             '<tr>'+
                                                 '<td><strong>Name</strong></td>'+
                                                 '<td>'+filtered[0]['Name']+'</td>'+
-                                                '<td><strong>Status<s/trong></td>'+
-                                                '<td>'+filtered[0]['Status']+'</td>'+
+                                                '<td><strong>Start date</strong></td>'+
+                                                '<td>'+filtered[0]['Start date']+'</td>'+
+                                                '<td><strong># Feedback</strong></td>'+
+                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
                                             '</tr>'+
                                             '<tr>'+
                                                 '<td><strong>Scale</strong></td>'+
                                                 '<td>'+filtered[0]['Scale']+'</td>'+
-                                                '<td><strong>Start date</strong></td>'+
-                                                '<td>'+filtered[0]['Start date']+'</td>'+
+                                                '<td><strong>National Coordination<strong></td>'+
+                                                '<td>'+filtered[0]['National Coordination']+'</td>'+
+                                                '<td><strong>Partners<strong></td>'+
+                                                '<td>'+filtered[0]['Partners']+'</td>'+
+                                            '</tr>'+
+                                            '<tr>'+
+                                                '<td><strong>Status<s/trong></td>'+
+                                                '<td>'+filtered[0]['Status']+'</td>'+
+                                                '<td><strong>Interagency</strong></td>'+
+                                                '<td>'+filtered[0]['Inter-agency']+'</td>'+
                                                 '<td><strong>Keywords</strong></td>'+
                                                 '<td>'+filtered[0]['Keyword']+'</td>'+
                                             '</tr>'+
                                             '<tr>'+
-                                                '<td><strong>Partners<strong></td>'+
-                                                '<td>'+filtered[0]['Partners']+'</td>'+
-                                                '<td><strong># Feedbacks</strong></td>'+
-                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
+                                                '<td><strong>Target</strong></td>'+
+                                                '<td>'+filtered[0]['Target']+'</td>'+
+                                                '<td><strong>Contact<strong></td>'+
+                                                '<td>'+filtered[0]['Contact Email']+'</td>'+
                                                 '<td><strong>Details<strong></td>'+
                                                 '<td>'+filtered[0]['Details']+'</td>'+
-
-                                            '</tr>'+
+                                        '</tr>'+
                                         '</tbody>'+
                                     '</table>'+
                                 '</td>'+
@@ -849,6 +899,65 @@ function format(arr){
                             '</tr>'
             '</table>'
 }//format
+
+function updateDataTable(data = cfmData){
+    var dt = getDataTableData(data);
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt);
+
+} //updateDataTable
+
+
+$('#orgSelect').on('change', function(d){
+    var select = $('#orgSelect').val();
+    var filter = cfmData;
+    select != "all" ? filter = cfmData.filter(function(d){ return d['Organisation Name'] == select ; }): null;
+    
+    $('#regionSelect').val('all');
+    updateDataTable(filter);
+    updatePane(filter, select);
+});
+
+$('#regionSelect').on('change', function(e){
+    var select = $('#regionSelect').val();
+    var filter = filteredCfmData;
+    
+    select != "all" ? filter = filteredCfmData.filter(function(d){ return d['Region'] == select ; }) : null;
+    // filteredCfmData = getFilteredDataFromSelection();
+
+    // filteredCfmData.forEach(element => {
+    //     countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
+    // });
+    $('#orgSelect').val('all');
+    updateDataTable(filter);
+    updatePane(filter, select);
+    // reset others filters
+
+    // updateViz();
+    // zoom to region 
+    // if (select == 'all') {
+    //     mapsvg.transition()
+    //     .duration(750)
+    //     .call(zoom.transform, d3.zoomIdentity);
+    // }
+    // zoomToRegion(select);
+    // reset layers selection to all
+    // $('#all').prop('checked', true);
+
+  });
+
+$('#reset-table').on('click', function(){
+    $('#regionSelect').val('all');
+    $('#orgSelect').val('all');
+    generateDefaultDetailPane();
+    // reset map selection
+    mapsvg.select('g').selectAll('.hasStudy').attr('fill', mapFillColor);
+    // if(countrySelectedFromMap){
+    var dt = getDataTableData();
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dt)
+    // }
+});
 //v1.0 
 let geodataUrl = 'data/wld.json';
 let cfmDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbPRrmlDfV3WzI-5QizI2ig2AoJo84KS7pSQtXkUiV5BD3s4uxpXqW8rK2sHmNjP2yCavO1XasLyCe/pub?gid=126026288&single=true&output=csv';
@@ -872,13 +981,13 @@ $( document ).ready(function(){
             });
             cfmData = data[1];
             filteredCfmData = data[1];
-            console.log(cfmData)
             var colUniqueValues = getColumnUniqueValues('Country', 'ISO3', 'Region', 'Organisation Name');
             countriesArr = colUniqueValues[0],
             countriesISO3Arr = colUniqueValues[1],
             regionsArr.push(...colUniqueValues[2]),
             organisationsArr.push(...colUniqueValues[3]);
             
+            generateDefaultDetailPane();
             generateRegionDropdown();
             generateOrgDropdown();
             initiateMap();
@@ -892,39 +1001,3 @@ $( document ).ready(function(){
     getData();
 });
 
-$('#orgSelect').on('change', function(d){
-    filteredCfmData = getFilteredDataFromSelection();
-    filteredCfmData.forEach(element => {
-        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
-    });
-    updateViz();
-});
-
-$('#regionSelect').on('change', function(e){
-    var select = $('#regionSelect').val();
-    // select != "all" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
-    filteredCfmData = getFilteredDataFromSelection();
-
-    filteredCfmData.forEach(element => {
-        countriesISO3Arr.includes(element['ISO3']) ? '' : countriesISO3Arr.push(element['ISO3']);
-    });
-    updateViz();
-    // zoom to region 
-    // if (select == 'all') {
-    //     mapsvg.transition()
-    //     .duration(750)
-    //     .call(zoom.transform, d3.zoomIdentity);
-    // }
-    zoomToRegion(select);
-    // reset layers selection to all
-    // $('#all').prop('checked', true);
-
-  });
-
-$('#reset-table').on('click', function(){
-    // if(countrySelectedFromMap){
-    var dt = getDataTableData();
-    $('#datatable').dataTable().fnClearTable();
-    $('#datatable').dataTable().fnAddData(dt)
-    // }
-});
