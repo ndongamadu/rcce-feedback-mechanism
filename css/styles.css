@@ -1368,3 +1368,6 @@ a {
 
 table.tabDetail tbody tr {
   background-color: #f5f5f5; }
+
+.dt-buttons {
+  display: none; }

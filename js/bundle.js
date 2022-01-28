@@ -756,8 +756,11 @@ function getDataTableData(data = filteredCfmData){
                 element['Channels'],
                 element['Emergency'], 
                 '<a href="'+element['Link']+'" target="blank"><i class="fa fa-external-link"></i></a>',
-            ]
-        );
+                //hidden
+                element['Name'], element['Scale'], element['# Feedbacks (last 6 months)'], element['Target'],
+                element['Details'], element['Keyword'], element['National Coordination'], element['Inter-agency'],
+                element['Partners'], element['Contact email'], element['Status']
+            ]);
     });
     return dt;
 } //getDataTableData
@@ -775,10 +778,10 @@ function generateDataTable(){
                 "defaultContent": '<i class="fa fa-plus-circle"></i>',
                 "width": "1%"
             },
-            {"width": "10%"},
+            {"width": "15%"},
             {"width": "10%"},
             {"width": "5%"},
-            {"width": "35%"},
+            {"width": "25%"},
             {"width": "15%"},
             {"width": "1%"}
         ],
@@ -791,9 +794,10 @@ function generateDataTable(){
                 "defaultContent": "-",
                 "targets": "_all"
             },
-            // {"targets": [7], "visible": false},{"targets": [8], "visible": false},{"targets": [9], "visible": false},
-            // {"targets": [10], "visible": false},{"targets": [11], "visible": false},{"targets": [12], "visible": false},
-            // {"targets": [13], "visible": false},{"targets": [14], "visible": false},{"targets": [15], "visible": false},
+            {"targets": [7], "visible": false},{"targets": [8], "visible": false},{"targets": [9], "visible": false},
+            {"targets": [10], "visible": false},{"targets": [11], "visible": false},{"targets": [12], "visible": false},
+            {"targets": [13], "visible": false},{"targets": [14], "visible": false},{"targets": [15], "visible": false},
+            {"targets": [16], "visible": false},{"targets": [16], "visible": false}
             // { "searchable" : true, "targets": "_all"},
             // {"type": "myDate","targets": 4}
         ],
@@ -808,18 +812,17 @@ function generateDataTable(){
                     extend: 'excelHtml5',
                     "className": "exportData",
                     exportOptions:{
-                        // columns: ':visible',
-                        rows: ':visible',
-                        // format:{
-                        //     header: function(data, columnIdx){
-                        //         var hd = ['details', 'authors', 'countries', 'variables', 'source_comment','methodology','target_pop','sample_type','quality_check'];
-                        //         if(columnIdx >= 7){
-                        //             return hd[columnIdx-7];
-                        //         }else {
-                        //             return data;
-                        //         }
-                        //     }
-                        // }
+                        page: ':all',
+                        format:{
+                            header: function(data, columnIdx){
+                                var hd = ['Name', 'Scale', '# Feedbacks (last 6 months)', 'Target', 'Details','Keyword','National Coordination','Inter-agency','Partners', 'Contact email', 'Status'];
+                                if(columnIdx >= 7){
+                                    return hd[columnIdx-7];
+                                }else {
+                                    return data;
+                                }
+                            }
+                        }
                     }
                 }
             ]
@@ -850,53 +853,58 @@ function generateDataTable(){
     });
 } //generateDataTable
 
+$("#exportTable").on("click", function() {
+    // datatable.button( '.buttons-excel' ).trigger();
+    $(".buttons-excel").trigger("click");
+});
+
 function format(arr){
     filtered = cfmData.filter(function(d){ return d['id']==arr[0]; });
     return '<table class="tabDetail" id="cfmDetails" >'+
-    '<tr>'+
-                                '<td>&nbsp;</td>'+
-                                '<td>&nbsp;</td>'+
-                                '<td>&nbsp;</td>'+
-                                '<td>'+
-                                    '<table>'+
-                                        '<tbody>'+
-                                            '<tr>'+
-                                                '<td><strong>Name</strong></td>'+
-                                                '<td>'+filtered[0]['Name']+'</td>'+
-                                                '<td><strong>Start date</strong></td>'+
-                                                '<td>'+filtered[0]['Start date']+'</td>'+
-                                                '<td><strong># Feedback</strong></td>'+
-                                                '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
-                                            '</tr>'+
-                                            '<tr>'+
-                                                '<td><strong>Scale</strong></td>'+
-                                                '<td>'+filtered[0]['Scale']+'</td>'+
-                                                '<td><strong>National Coordination<strong></td>'+
-                                                '<td>'+filtered[0]['National Coordination']+'</td>'+
-                                                '<td><strong>Partners<strong></td>'+
-                                                '<td>'+filtered[0]['Partners']+'</td>'+
-                                            '</tr>'+
-                                            '<tr>'+
-                                                '<td><strong>Status<s/trong></td>'+
-                                                '<td>'+filtered[0]['Status']+'</td>'+
-                                                '<td><strong>Interagency</strong></td>'+
-                                                '<td>'+filtered[0]['Inter-agency']+'</td>'+
-                                                '<td><strong>Keywords</strong></td>'+
-                                                '<td>'+filtered[0]['Keyword']+'</td>'+
-                                            '</tr>'+
-                                            '<tr>'+
-                                                '<td><strong>Target</strong></td>'+
-                                                '<td>'+filtered[0]['Target']+'</td>'+
-                                                '<td><strong>Contact<strong></td>'+
-                                                '<td>'+filtered[0]['Contact Email']+'</td>'+
-                                                '<td><strong>Details<strong></td>'+
-                                                '<td>'+filtered[0]['Details']+'</td>'+
-                                        '</tr>'+
-                                        '</tbody>'+
-                                    '</table>'+
-                                '</td>'+
-                                '<td>&nbsp;</td>'+
-                            '</tr>'
+                '<tr>'+
+                    '<td>&nbsp;</td>'+
+                    '<td>&nbsp;</td>'+
+                    '<td>&nbsp;</td>'+
+                    '<td>'+
+                        '<table>'+
+                            '<tbody>'+
+                                '<tr>'+
+                                    '<td><strong>Name</strong></td>'+
+                                    '<td>'+filtered[0]['Name']+'</td>'+
+                                    '<td><strong>Start date</strong></td>'+
+                                    '<td>'+filtered[0]['Start date']+'</td>'+
+                                    '<td><strong># Feedback</strong></td>'+
+                                    '<td>'+filtered[0]['# Feedbacks (last 6 months)']+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Scale</strong></td>'+
+                                    '<td>'+filtered[0]['Scale']+'</td>'+
+                                    '<td><strong>National Coordination<strong></td>'+
+                                    '<td>'+filtered[0]['National Coordination']+'</td>'+
+                                    '<td><strong>Partners<strong></td>'+
+                                    '<td>'+filtered[0]['Partners']+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Status<s/trong></td>'+
+                                    '<td>'+filtered[0]['Status']+'</td>'+
+                                    '<td><strong>Interagency</strong></td>'+
+                                    '<td>'+filtered[0]['Inter-agency']+'</td>'+
+                                    '<td><strong>Keywords</strong></td>'+
+                                    '<td>'+filtered[0]['Keyword']+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Target</strong></td>'+
+                                    '<td>'+filtered[0]['Target']+'</td>'+
+                                    '<td><strong>Contact<strong></td>'+
+                                    '<td>'+filtered[0]['Contact Email']+'</td>'+
+                                    '<td><strong>Details<strong></td>'+
+                                    '<td>'+filtered[0]['Details']+'</td>'+
+                            '</tr>'+
+                            '</tbody>'+
+                        '</table>'+
+                    '</td>'+
+                    '<td>&nbsp;</td>'+
+                '</tr>'+
             '</table>'
 }//format
 
@@ -907,6 +915,68 @@ function updateDataTable(data = cfmData){
 
 } //updateDataTable
 
+function getFilteredDataFromDropdown(){
+    var org = $('#orgSelect').val();
+    var region = $('#regionSelect').val();
+    var data;
+    if(org != "all" && region != "all") {
+        data = filteredCfmData.filter(function(d){
+            return (d['Region'] == region) && (d['Organisation Name'] == org);
+        })
+    }
+    else {
+        org == "all" ? data = filteredCfmData.filter(function(d){ return d['Region'] == region ;}) :
+        region == "all" ? data = filteredCfmData.filter(function(d){ return d['Organisation Name'] == org ;}) : '';
+    }
+    return data;
+}//getFilteredDataFromDropdown
+
+// returns a formatted array with purposes/emergencies 
+function getFormattedColumn(item){
+    var items = [] ;
+    var arr = item.split(",");
+    var trimedArr = arr.map(x => x.trim());
+    for (let index = 0; index < trimedArr.length; index++) { //remove empty elements
+        if (trimedArr[index]) {
+            items.push(trimedArr[index])
+        }
+    }
+    return items;
+} // getFormattedColumn
+
+var buttons = document.getElementsByClassName("filter");
+for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', clickButton);   
+}
+
+// reset all filters and filter only clicked
+function clickButton(){
+    $('.btn').removeClass('active');
+    var filter;
+    var colSelected = this.value;
+    if (['Active', 'Under Development', 'Inactive', 'Closed'].includes(colSelected)) {
+        // status
+        filter = cfmData.filter(function(d){ return d['Status'] == colSelected ;}) ;
+    } else{
+        // Emergency
+        if(['COVID-19', 'Ebola'].includes(colSelected)){
+            filter = cfmData.filter(function(d){ 
+                var arr = getFormattedColumn(d['Emergency']);
+                return arr.includes(colSelected) ;}) ;
+        }else {
+            filter = cfmData.filter(function(d){ 
+                var arr = getFormattedColumn(d['Emergency']);
+                return (!arr.includes('COVID-19')) && (!arr.includes('Ebola')) ;}) ;
+        }
+    }    
+    
+    updateDataTable(filter);
+    $('#orgSelect').val('all');
+    $('#regionSelect').val('all');
+    updateDataTable(filter);
+    updatePane(filter, colSelected);
+
+}//clickButton
 
 $('#orgSelect').on('change', function(d){
     var select = $('#orgSelect').val();
