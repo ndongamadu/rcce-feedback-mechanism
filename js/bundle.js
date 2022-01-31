@@ -46,6 +46,7 @@ function updatePane(data, title){
         arrCountries.includes(element['Country']) ? '' : arrCountries.push(element['Country']);
         arrOrgs.includes(element['Organisation Name']) ? '' : arrOrgs.push(element['Organisation Name']);
     });
+    title == "emergency-other" ? title = "Other emergency" : null;
     $('.details > h6').text(title);
     $('#totalCfms').text(data.length);
     $('#countriesCFM').text(arrCountries.length);
@@ -549,6 +550,7 @@ function generateOrgDropdown(){
 //     }
 // } //getFilteredDataFromSelection
 // map js
+let isMobile = $(window).width()<767 ? true : false;
 let countriesArr = [];
 let g, mapsvg, projection, width, height, zoom, path;
 let viewportWidth = window.innerWidth;
@@ -563,9 +565,10 @@ let mapFillColor = '#204669',//'#C2DACA',//'#2F9C67',
 
 function initiateMap() {
     width = viewportWidth;
+    // height = (isMobile) ? 400 : 500;
     height = 500;
-    var mapScale = width/10.6;
-    var mapCenter = [25, 25];
+    var mapScale = (isMobile) ? width/3.5 : width/10.6;
+    var mapCenter = (isMobile) ? [12, 12] : [25, 25];
 
     projection = d3.geoMercator()
         .center(mapCenter)
@@ -804,7 +807,7 @@ function generateDataTable(){
         "pageLength": 10,
         "bLengthChange": false,
         "pagingType": "simple_numbers",
-        // "order":[[0, 'asc']],
+        "order":[[1, 'asc']],
         "dom": "Blrtp",
         "buttons": {
             "buttons": [
