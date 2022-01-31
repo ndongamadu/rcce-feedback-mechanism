@@ -16,13 +16,16 @@ $( document ).ready(function(){
             d3.csv(cfmDataUrl)
         ]).then(function(data){
             geomData = topojson.feature(data[0], data[0].objects.geom);
+            var id = 0;
+            data[2].forEach(element => {
+                element['id'] = id + 1;
+                id = id + 1 +Math.floor(Math.random() * 10);
+            });
             cfmData = data[2];
             locations = data[1];
             filteredCfmData = data[2];
             setCountriesAndOrgCFM();
             regionSelectionDropdown();
-            // statusChart = generateBarChart();
-
             initiateMap();
             generateDataTable();
             //remove loader and show vis
@@ -43,7 +46,7 @@ $('#orgSelect').on('change', function(d){
 });
 
 $('#regionSelect').on('change', function(e){
-    // var select = $('#regionSelect').val();
+    var select = $('#regionSelect').val();
     // select != "all" ? filteredCfmData = cfmData.filter(function(d){ return d['Region'] == select ; }) : 
     filteredCfmData = getFilteredDataFromSelection();
 
@@ -57,7 +60,7 @@ $('#regionSelect').on('change', function(e){
     //     .duration(750)
     //     .call(zoom.transform, d3.zoomIdentity);
     // }
-    // zoomToRegion(select);
+    zoomToRegion(select);
     // reset layers selection to all
     // $('#all').prop('checked', true);
 

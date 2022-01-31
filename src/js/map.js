@@ -145,21 +145,6 @@ function zoomed(){
     }
 }
 
-function clicked(event, d){
-    var offsetX = 50;//(isMobile) ? 0 : 50;
-    var offsetY = 25;//(isMobile) ? 0 : 25;
-    const [[x0, y0], [x1, y1]] = [[-20.75,-13.71],[31.5,27.87]];//path.bounds(d);
-    // d3.event.stopPropagation(event);
-    mapsvg.transition().duration(750).call(
-      zoom.transform,
-      d3.zoomIdentity
-        .translate(width / 2, height / 2)
-        .scale(Math.min(5, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
-        .translate(-(x0 + x1) / 2 + offsetX, -(y0 + y1) / 2 - offsetY),
-    //   d3.mouse(mapsvg.node())
-    );
-  }
-
 // zoom on region select
 function zoomToRegion(region){
     var isInRegion = true;
@@ -169,25 +154,36 @@ function zoomToRegion(region){
         .call(zoom.transform, d3.zoomIdentity);
     }
     else{
+      // get a country code from the region
+      var oneCountry = getFirstCountryOfRegion(region);
       geomData.features.forEach(function(c){
-        if (countriesISO3Arr.includes(c.properties.ISO_A3) && isInRegion){
-          clicked(c);
-          isInRegion = false;
+        if (c.properties.ISO_A3 == oneCountry){
+          var offsetX = 0;//(isMobile) ? 0 : 50;
+          var offsetY = 0;//(isMobile) ? 0 : 25;
+          const [[x0, y0], [x1, y1]] = path.bounds(c);
+          // d3.event.stopPropagation();
+          mapsvg.transition().duration(750).call(
+            zoom.transform,
+            d3.zoomIdentity
+              .translate(width / 2, height / 2)
+              .scale(Math.min(3, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+              .translate(-(x0 + x1) / 2 + offsetX, -(y0 + y1) / 2 - offsetY),
+            // d3.mouse(mapsvg.node())
+          );
         }
       });
     }
   }
 
-// on focus layer change
-// $('input[type="radio"]').click(function(){
-//   var selected = $('input[name="focus"]:checked');
-//   choroplethMap(selected.val());
-//   // reset datatable : test if there is country selection from the map first
-//   if (countrySelectedFromMap) {
-//     var dt = getDataTableData();
-//     $('.purpose > h6 > span').text("(Select Country)");
-//     $('#datatable').dataTable().fnClearTable();
-//     $('#datatable').dataTable().fnAddData(dt);
-//   }
-//   countrySelectedFromMap = false;
-// });
+
+// return a country belonging a given region
+function getFirstCountryOfRegion(region){
+  var country = "";
+  region == 'ESAR' ? country = 'BDI' :
+  region == 'WCAR' ? country = 'TCD' :
+  region == 'AP' ? country = 'MYS' :
+  region == 'LAC' ? country = 'COL' :
+  region == 'MENA' ? country = 'YEM' :
+  region == 'EURO' ? country = 'TUR' : '';
+  return country;
+} //getFirstCountryOfRegion
