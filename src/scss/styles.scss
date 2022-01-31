@@ -400,3 +400,29 @@ table.tabDetail tbody tr {
 .dt-buttons {
   display: none;
 }
+
+// responsive
+@media only screen and (max-width: 767px) {
+  // #sectionOne {
+  //   height: 890px;
+  // }
+  .sur-couche {
+    position: static;
+    width: 100%;
+  }
+  .details {
+    width: 100%;
+  }
+  #map {
+    width: 100%;
+    margin-bottom: 10px;
+    // height: 100px;
+  }
+  .flex-centrer {
+    display: inline;
+    // padding-top: 5px;
+  }
+  .btn-tertiary {
+    display: inline;
+  }
+}
