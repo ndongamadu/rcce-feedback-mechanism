@@ -60,7 +60,7 @@ function generateDataTable(){
         "pageLength": 10,
         "bLengthChange": false,
         "pagingType": "simple_numbers",
-        // "order":[[0, 'asc']],
+        "order":[[1, 'asc']],
         "dom": "Blrtp",
         "buttons": {
             "buttons": [
