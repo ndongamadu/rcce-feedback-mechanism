@@ -1092,7 +1092,8 @@ body {
   .details p {
     color: #000;
     text-align: justify;
-    padding-bottom: 15px; }
+    padding-bottom: 15px;
+    font-size: 14px; }
   .details .label {
     fill: #fff; }
   .details h5 {
@@ -1105,8 +1106,8 @@ body {
     .details #divider hr {
       border-top: 4px solid #2f9c67; }
   .details img {
-    height: 100px;
-    width: 150px;
+    height: 180px;
+    width: 220px;
     padding-right: 10px;
     padding-bottom: 15px; }
   .details h6 {
@@ -1114,6 +1115,14 @@ body {
     font-size: 17px;
     color: #d90368;
     padding-bottom: 10px; }
+  .details .btn-info {
+    margin: 10px 0 10px 0;
+    color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: "Open Sans", Helvetica, Arial, Lucida, sans-serif !important;
+    background-color: #2f9c67; }
   .details .key-figure {
     padding-bottom: 10px; }
     .details .key-figure h5,
